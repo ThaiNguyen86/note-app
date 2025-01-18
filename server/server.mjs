@@ -7,8 +7,8 @@ import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import mongoose from "mongoose";
 
-import {typeDefs} from "./schemas/index.js";
-import {resolvers} from "./resolvers/index.js";
+import {typeDefs} from "./src/schemas/index.js";
+import {resolvers} from "./src/resolvers/index.js";
 
 import "dotenv/config";
 
