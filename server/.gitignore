@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Tệp log
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Môi trường
+.env
+
+# Các tệp và thư mục biên dịch
+dist/
+build/
+
+# Hệ thống file của macOS
+.DS_Store
+
+# Hệ thống file của Windows
+Thumbs.db
+
+# Tệp tạm thời của editor
+.vscode/
+.idea/
+
+# Các tệp biên dịch tạm thời
+*.log
+
+# Các tệp do npm hoặc yarn tạo ra
+package-lock.json
+yarn.lock
+
+# Các tệp hoặc thư mục có thể bị tạo ra trong quá trình phát triển hoặc xây dựng
+coverage/
