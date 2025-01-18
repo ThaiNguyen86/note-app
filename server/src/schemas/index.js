@@ -26,4 +26,20 @@ export const typeDefs = `#graphql
     type Mutation {
         addFolder(name: String!): Folder
     }
+
+    type User {
+        id: ID!
+        username: String!
+        createdAt: String!
+    }
+    
+    type AuthPayload {
+        token: String!
+        user: User!
+    }
+  
+    extend type Mutation {
+        register(username: String!, password: String!): AuthPayload
+        login(username: String!, password: String!): AuthPayload
+    }
 `;

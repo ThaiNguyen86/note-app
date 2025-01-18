@@ -1,5 +1,6 @@
 import fakeData from "../fakeData/index.js";
 import FolderModel from "../models/folderModel.js";
+import { authResolvers } from "./authResolvers.js";
 
 export const resolvers = {
   Query: {
@@ -27,6 +28,7 @@ export const resolvers = {
     }
   },
   Mutation: {
+    ...authResolvers.Mutation,
     addFolder: async (parent, args) => {
       const newFolder = new FolderModel(...args, { authorId: "123" });
       console.log({ newFolder });
