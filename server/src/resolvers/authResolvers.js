@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/userModel.js";
-import { ENV } from "../config/environment.js";
+import dotenv from "dotenv";
+
+dotenv.config(); // Đọc biến từ file .env
 
 export const authResolvers = {
   Mutation: {
@@ -16,7 +18,9 @@ export const authResolvers = {
       await newUser.save();
 
       // Tạo token
-      const token = jwt.sign({ userId: newUser.id }, ENV.SECRET_KEY, { expiresIn: "1d" });
+      const token = jwt.sign({ userId: newUser.id }, process.env.SECRET_KEY, {
+        expiresIn: "1d",
+      });
 
       return { token, user: newUser };
     },
@@ -31,7 +35,9 @@ export const authResolvers = {
       if (!valid) throw new Error("Invalid username or password");
 
       // Tạo token
-      const token = jwt.sign({ userId: user.id }, ENV.SECRET_KEY, { expiresIn: "1d" });
+      const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, {
+        expiresIn: "1d",
+      });
 
       return { token, user };
     },
