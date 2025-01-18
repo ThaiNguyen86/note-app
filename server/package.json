@@ -1,9 +1,10 @@
 {
   "name": "note-app-server",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "main": "server.js",
   "scripts": {
+    "dev": "nodemon --inspect server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
@@ -23,6 +24,9 @@
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
+    "nodemailer": "^6.9.16"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.9"
   }
 }
