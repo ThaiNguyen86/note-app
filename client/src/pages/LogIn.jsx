@@ -13,22 +13,22 @@ function LogIn() {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { user } = useContext(AuthContext);
-  const auth = getAuth();
+
   const navigate = useNavigate();
+  const auth = getAuth();
+  const { user } = useContext(AuthContext);
 
   const handleLoginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
 
     const res = await signInWithPopup(auth, provider)
     console.log({ res });
-
   };
 
   if (user?.uid) {
     navigate('/');
-    return;
   }
+ 
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-emerald-300 to-amber-200 ">

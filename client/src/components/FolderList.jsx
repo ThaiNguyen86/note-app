@@ -6,7 +6,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 export default function FolderList({ folders }) {
 
   return (
-    <div className="h-full w-1/3 bg-teal-500 p-4">
+    <div className="h-full w-full bg-teal-500 p-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-2">
         <h5 className="font-bold text-xl text-white">Folders</h5>
@@ -17,8 +17,9 @@ export default function FolderList({ folders }) {
       <ListGroup
         className="overflow-y-auto max-h-96 bg-teal-500 text-left p-2"
         style={{
-          scrollbarWidth: 'thin', // For Firefox
-          scrollbarColor: 'gray lightgray', // For Firefox
+          scrollbarWidth: 'none', // Firefox
+          msOverflowStyle: 'none', // Internet Explorer/Edge
+          overflowY: 'scroll', // Ensure scrolling works
         }}
       >
         {folders.map(({ id, name }) => (
@@ -29,6 +30,7 @@ export default function FolderList({ folders }) {
           >
             <Card
                 className="mb-2"
+
             >
               <Card.Body className="p-3">
                 <Card.Text className="text-lg font-semibold text-black">{name}</Card.Text>

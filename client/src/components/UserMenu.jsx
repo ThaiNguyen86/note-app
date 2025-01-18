@@ -1,15 +1,26 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dropdown, Button } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthProvider';
 
+
 export default function UserMenu() {
+  const navigate = useNavigate();
   const {
     user: { displayName, photoURL, auth },
   } = useContext(AuthContext);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const handleLogout = () => {
     auth.signOut();
+    setIsLoggingOut(true);
   };
+
+  useEffect(() => {
+    if (isLoggingOut) {
+      navigate('/login');
+    }
+  }, [isLoggingOut, navigate]);
 
   return (
     <div className="border border-gray-300 rounded-lg shadow">

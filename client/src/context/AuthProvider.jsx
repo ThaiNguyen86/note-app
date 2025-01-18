@@ -1,7 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import {getAuth} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-
 export const AuthContext = createContext();
 
 export default function AuthProvider({children}) {
@@ -11,9 +10,9 @@ export default function AuthProvider({children}) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            console.log("[From AuthProvider", {user});
-            if (user.uid){
+        const unsubscribe = auth.onIdTokenChanged(user => {
+            console.log("[From AuthProvider]", {user});
+            if (user?.uid){
                 setUser(user);
                 localStorage.setItem("accessToken", user.accessToken);
                 return;
@@ -22,11 +21,12 @@ export default function AuthProvider({children}) {
             setUser({});
             localStorage.clear();
             navigate("/login");
-        })
+            
+        });
 
         return () => {
             unsubscribe();
-        }
+        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [auth]);
 

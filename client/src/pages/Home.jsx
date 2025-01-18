@@ -7,12 +7,12 @@ import FolderList from '../components/FolderList';
 const Home = () => {
 
     return (
-        <div className='flex-col gap-4 m-8 ' >
+        <div className='flex-col m-8 ' >
             <div className='flex font-dm-sans gap-4 justify-end items-start' >
                 <UserMenu />
             </div>
             <div className='flex font-dm-sans shadow-md border ' >
-
+                <div className='w-1/4 bg-teal-500'>
                 <FolderList
                     folders={
                         [
@@ -21,10 +21,16 @@ const Home = () => {
                             { id: '3', name: 'Folder 3' },
                             { id: '4', name: 'Folder 4' },
                             { id: '5', name: 'Folder 5' },
+                            { id: '5', name: 'Folder 5' },
+                            { id: '5', name: 'Folder 5' },
 
                         ]}
                 />
+                </div>
+                <div  className='w-2/3'>
                 <Outlet />
+                </div>
+                
             </div>
         </div>
 
