@@ -17,3 +17,41 @@ export const graphqlQuery = async (query, variables = {}) => {
   });
   return response.data.data;
 };
+
+// API gọi GraphQL để đăng ký người dùng
+export const registerUser = async (username, password) => {
+  const query = `
+    mutation RegisterUser($username: String!, $password: String!) {
+      register(username: $username, password: $password) {
+        token
+        user {
+          id
+          username
+        }
+      }
+    }
+  `;
+
+  const variables = { username, password };
+
+  return await graphqlQuery(query, variables);  // Gọi graphqlQuery và trả về thông tin người dùng sau khi đăng ký
+};
+
+// API gọi GraphQL để đăng nhập người dùng
+export const loginUser = async (username, password) => {
+  const query = `
+    mutation LoginUser($username: String!, $password: String!) {
+      login(username: $username, password: $password) {
+        token
+        user {
+          id
+          username
+        }
+      }
+    }
+  `;
+  
+  const variables = { username, password };
+
+  return await graphqlQuery(query, variables);  // Gọi graphqlQuery và trả về token và người dùng đăng nhập
+};

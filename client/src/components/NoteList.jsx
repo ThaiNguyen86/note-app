@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Link, Outlet, useParams, useLoaderData, useSubmit, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 export default function NoteList() {
+  const [selectedNoteId, setSelectedNoteId] = useState(null);
 
   const folder = {
     notes: [{ id: '1', content: "Hello" }, { id: '2', content: "World" }, { id: '3', content: "Goodbye" },
@@ -14,45 +14,41 @@ export default function NoteList() {
     ]
   };
 
-
+  const handleNoteClick = (id) => {
+    // Toggle giữa trạng thái đã chọn và chưa chọn
+    setSelectedNoteId(prevSelectedNoteId => (prevSelectedNoteId === id ? null : id));
+  };
 
   return (
     <div className="flex h-full w-full">
       {/* Sidebar - Note List */}
-      <div className=" w-1/3 bg-amber-200 p-3 ">
+      <div className="w-1/4 bg-custom-gray p-2">
         {/* Header */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center my-2">
           <h5 className="font-bold">Notes</h5>
-
         </div>
 
         {/* Notes List */}
         <ListGroup
-          className="overflow-y-auto gap-2 max-h-96 text-left p-2"
+          className="overflow-y-auto h-screen text-left px-2"
           style={{
             scrollbarWidth: 'none', // Firefox
             msOverflowStyle: 'none', // Internet Explorer/Edge
             overflowY: 'scroll', // Ensure scrolling works
           }}
         >
-          <style>
-            {`
-      /* Hide scrollbar for Chrome, Safari, and Edge */
-      .overflow-y-auto::-webkit-scrollbar {
-        display: none;
-      }
-      /* Hide scrollbar for Firefox */
-      .overflow-y-auto {
-        scrollbar-width: none;
-      }
-    `}
-          </style>
           {folder.notes.map(({ id, content }) => (
-            <Link key={id} to={`note/${id}`}>
-              <Card>
+            <Link
+              key={id}
+              to={`note/${id}`}
+              onClick={() => handleNoteClick(id)} // Cập nhật state khi click vào ghi chú
+            >
+              <Card
+                className={`mb-2 ${selectedNoteId === id ? 'bg-custom-yellow' : ''} hover:bg-custom-yellow transition-all duration-200`}
+              >
                 <Card.Body className="p-2">
                   <div
-                    className="text-sm font-semibold mb-1"
+                    className={`text-sm font-semibold ${selectedNoteId === id ? 'text-black' : 'text-gray-600'}`}
                     dangerouslySetInnerHTML={{
                       __html: `${content.substring(0, 30) || 'Empty'}`,
                     }}
@@ -63,11 +59,10 @@ export default function NoteList() {
             </Link>
           ))}
         </ListGroup>
-
       </div>
 
       {/* Content Area */}
-      <div className="w-2/3">
+      <div className="w-3/4 mx-2">
         <Outlet />
       </div>
     </div>

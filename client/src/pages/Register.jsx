@@ -1,34 +1,41 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { Button, InputGroup, FormControl } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { AuthContext } from '../context/AuthProvider';
+import { registerUser } from '../services/api';
 
-
-function LogIn() {
+function Register() {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // Trường xác nhận mật khẩu
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Hiển thị mật khẩu xác nhận
 
   const navigate = useNavigate();
-  const auth = getAuth();
-  const { user } = useContext(AuthContext);
 
-  const handleLoginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
+  const handleRegister = async () => {
+    // Kiểm tra nếu mật khẩu và mật khẩu xác nhận không giống nhau
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      return;
+    }
 
-    const res = await signInWithPopup(auth, provider)
-    console.log({ res });
+    try {
+      const res = await registerUser(username, password);
+      console.log({ res });
+      localStorage.setItem('user', JSON.stringify(res.register));
+
+      if (res.register) {
+        toast.success('Register successfully');
+        navigate('/login');
+      }
+    } catch (error) {
+      toast.error('Error during registration');
+    }
   };
-
-  if (user?.uid) {
-    navigate('/');
-  }
- 
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-emerald-300 to-amber-200 ">
@@ -40,7 +47,9 @@ function LogIn() {
         <form>
           {/* Ô nhập Username */}
           <div className="mb-3">
-            <label htmlFor="username" className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold">Username <span style={{ color: 'red' }}>*</span></label>
+            <label htmlFor="username" className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold">
+              Username <span style={{ color: 'red' }}>*</span>
+            </label>
             <FormControl
               type="text"
               id="username"
@@ -53,7 +62,9 @@ function LogIn() {
 
           {/* Ô nhập Password */}
           <div className="mb-3">
-            <label htmlFor="password" className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold">Password <span style={{ color: 'red' }}>*</span></label>
+            <label htmlFor="password" className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold">
+              Password <span style={{ color: 'red' }}>*</span>
+            </label>
             <InputGroup>
               <FormControl
                 type={showPassword ? 'text' : 'password'}
@@ -72,21 +83,45 @@ function LogIn() {
               </Button>
             </InputGroup>
           </div>
+
+          {/* Ô nhập Confirm Password */}
+          <div className="mb-3">
+            <label htmlFor="confirmPassword" className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold">
+              Confirm Password <span style={{ color: 'red' }}>*</span>
+            </label>
+            <InputGroup>
+              <FormControl
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                className="shadow-sm"
+              />
+              <Button
+                variant="outline-secondary"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="border border-transparent outline-none hover:bg-gray-100 shadow-sm"
+              >
+                <i className={`bi ${showConfirmPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'} ${showConfirmPassword ? 'text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700' : 'text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700'}`}></i>
+              </Button>
+            </InputGroup>
+          </div>
         </form>
-        {/* Nút SIGN IN */}
+
+        {/* Nút REGISTER */}
         <button
           className="w-100 py-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 rounded-md mt-4"
-          onClick={handleLoginWithGoogle}
+          onClick={handleRegister}
         >
-          SIGN UP
+          REGISTER
         </button>
-
 
         {/* Footer */}
         <div className="text-center mt-3 small">
-          <span>New to Note App? </span>
-          <a href="/register" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700">
-            Sign up here
+          <span>Have an account? </span>
+          <a href="/login" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700">
+            Log in here
           </a>
         </div>
         <div className="text-center text-muted small mt-3 ">
@@ -96,4 +131,5 @@ function LogIn() {
     </div>
   );
 };
-export default LogIn;
+
+export default Register;

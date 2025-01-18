@@ -5,9 +5,8 @@ import { Button, InputGroup, FormControl } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { AuthContext } from '../context/AuthProvider';
-
+import { useAuth } from '../context/AuthProvider';
+import { loginUser } from '../services/api';
 
 function LogIn() {
   const [username, setUserName] = useState('');
@@ -15,18 +14,21 @@ function LogIn() {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const auth = getAuth();
-  const { user } = useContext(AuthContext);
+  const {userLogin} = useAuth();
+  const handleLogin = async () => {
+    try {
+      const res = await loginUser(username, password);
+      console.log({ res });
+      localStorage.setItem('user', JSON.stringify(res.login));
+      if(res.login){
+        toast.success('Login successfully');
+        userLogin(res.login);
+        navigate('/');
+      }
 
-  const handleLoginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-
-    const res = await signInWithPopup(auth, provider)
-    console.log({ res });
-  };
-
-  if (user?.uid) {
-    navigate('/');
+    } catch (error) {
+      toast.error('Invalid username or password');
+    }
   }
  
 
@@ -76,12 +78,10 @@ function LogIn() {
         {/* Nút SIGN IN */}
         <button
           className="w-100 py-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 rounded-md mt-4"
-          onClick={handleLoginWithGoogle}
+          onClick={handleLogin}
         >
           SIGN IN
         </button>
-
-
         {/* Footer */}
         <div className="text-center mt-3 small">
           <span>New to Note App? </span>
@@ -96,4 +96,5 @@ function LogIn() {
     </div>
   );
 };
+
 export default LogIn;

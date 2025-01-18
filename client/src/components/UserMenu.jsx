@@ -1,18 +1,20 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, {useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dropdown, Button } from 'react-bootstrap';
-import { AuthContext } from '../context/AuthProvider';
-
+import { Dropdown } from 'react-bootstrap';
+import { useAuth } from '../context/AuthProvider';
 
 export default function UserMenu() {
   const navigate = useNavigate();
   const {
-    user: { displayName, photoURL, auth },
-  } = useContext(AuthContext);
+    user,
+    userLogout,
+  } = useAuth();
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Thực hiện đăng xuất
   const handleLogout = () => {
-    auth.signOut();
+    userLogout();  // Gọi method logout từ context
     setIsLoggingOut(true);
   };
 
@@ -21,21 +23,16 @@ export default function UserMenu() {
       navigate('/login');
     }
   }, [isLoggingOut, navigate]);
-
   return (
-    <div className="border border-gray-300 rounded-lg shadow">
+    <div className="h-full w-full flex justify-between">
+      <h2 className="ml-2 text-transparent bg-clip-text bg-gradient-to-r from-emerald-900 to-yellow-800 font-bold text-2xl">Note App</h2>
       <Dropdown>
         {/* Tên người dùng và Avatar */}
         <Dropdown.Toggle
           variant="light"
           className="flex items-center"
         >
-          <span className="text-gray-800 font-medium">{displayName}</span>
-          <img
-            alt="avatar"
-            src={photoURL}
-            className="w-6 h-6 rounded-full ml-2"
-          />
+          <span className="text-gray-800 font-medium">{user?.user.username}</span>
         </Dropdown.Toggle>
 
         {/* Menu thả xuống */}

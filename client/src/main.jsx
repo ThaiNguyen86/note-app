@@ -1,13 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import  router from "./router";
-
+import router from "./router";
+import '../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './index.css';
-import './firebase/config';
+import { AuthProvider } from "./context/AuthProvider";
 
-ReactDOM.createRoot(document.getElementById("root")).render(  
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );

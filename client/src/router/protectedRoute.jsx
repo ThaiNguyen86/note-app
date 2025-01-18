@@ -1,12 +1,13 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";  // Sử dụng context thay cho localStorage
 
 export default function ProtectedRoute() {
-    const isAuthenticated = !!localStorage.getItem("accessToken");
+    const { user } = useAuth();  // Lấy user từ context
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+    if (!user) {  // Nếu người dùng không tồn tại (chưa đăng nhập)
+        return <Navigate to="/login" />;  // Chuyển hướng đến trang login
     }
 
-    return <Outlet />;
+    return <Outlet />;  // Hiển thị trang con nếu đã đăng nhập
 }
