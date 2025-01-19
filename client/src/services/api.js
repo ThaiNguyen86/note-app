@@ -55,3 +55,19 @@ export const loginUser = async (username, password) => {
 
   return await graphqlQuery(query, variables);  // Gọi graphqlQuery và trả về token và người dùng đăng nhập
 };
+
+// API gọi GraphQL để thêm folder mới
+export const createFolder = async (name) => {
+  const query = `
+    mutation CreateFolder($name: String!) {
+      createFolder(name: $name) {
+        id
+        name
+      }
+    }
+  `;
+
+  const variables = { name };
+
+  return await graphqlQuery(query, variables); // Gọi graphqlQuery và trả về folder mới được tạo
+};
