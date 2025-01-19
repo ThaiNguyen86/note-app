@@ -16,8 +16,8 @@ const comparePassword = async (password, hashedPassword) => {
 };
 
 
-const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateJWT = (userId) => {
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
 
@@ -26,5 +26,13 @@ const generateRandomCode = () => {
     return code.toString(); 
 };
 
+const verifyJWT = (token) => {
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+        return null;
+    }
+};
 
-module.exports = { hashPassword, comparePassword, generateToken, generateRandomCode};
+
+module.exports = { hashPassword, comparePassword, generateJWT, verifyJWT, generateRandomCode};

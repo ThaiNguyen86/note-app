@@ -31,37 +31,4 @@ const sendPasswordResetEmail = async (email) => {
     return resetCode;
 };
 
-const verifyResetToken = async (token) => {
-    const user = await User.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-        throw new Error('Token không hợp lệ hoặc đã hết hạn');
-    }
-
-    return true;
-};
-
-
-const resetPassword = async (token, newPassword) => {
-    const user = await User.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
-    });
-
-    if (!user) {
-        throw new Error('Token không hợp lệ hoặc đã hết hạn');
-    }
-
-    const hashedPassword = await hashPassword(newPassword);
-    user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    await user.save();
-
-    return 'Mật khẩu đã được thay đổi thành công!';
-};
-
-module.exports = { sendPasswordResetEmail, verifyResetToken, resetPassword };
+module.exports = { sendPasswordResetEmail};
