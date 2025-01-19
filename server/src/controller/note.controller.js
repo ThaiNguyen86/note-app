@@ -36,9 +36,32 @@ const createNote = async (req, res) => {
     }
 };
 
-const getNote = (req, res) => {
-    const { noteId } = req.params;
-    
+const getNote = async (req, res) => {
+    try {
+        const { noteId } = req.params;
+        const userId = req.userId;
+
+        const note = await Note.findOne({ _id: noteId, userId });
+
+        if (!note) {
+            return res.status(404).json({ message: 'Note not found' });
+        }
+
+        res.status(200).json({
+            message: 'Note retrieved successfully',
+            note: {
+                id: note._id,
+                title: note.title,
+                content: note.content,  
+                iv: note.iv,    
+                createdAt: note.createdAt,
+                updatedAt: note.updatedAt
+            }
+        });
+    } catch (error) {
+        console.error("Error retrieving note:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
 };
 
 const shareNote = (req, res) => {
