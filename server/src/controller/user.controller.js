@@ -1,10 +1,9 @@
 const User = require('../models/user.model');
-const { hashPassword, comparePassword, generateJWT } = require('../utils/auth.util');
+const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../utils/auth.util');
 const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 
 const register = async (req, res) => {
-    const { userName, email, password } = req.body;
-
+    const { username, email, password } = req.body;
     try {
         const emailExists = await User.findOne({ email });
         if (emailExists) {
@@ -12,7 +11,7 @@ const register = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
-        const user = await User.create({ userName, email, password: hashedPassword });
+        const user = await User.create({ username, email, password: hashedPassword });
 
         const token = generateJWT(user.id);
         res.status(201).json({ message: 'User registered successfully', token });
@@ -23,10 +22,10 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { userName, email, password } = req.body;
+    const { username, email, password } = req.body;
 
     try {
-        const user = await User.findOne({ $or: [{ userName }, { email }] });
+        const user = await User.findOne({ $or: [{ username }, { email }] });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
@@ -58,14 +57,13 @@ const forgotPassword = async (req, res) => {
 };
 
 const verifyOtp = async (req, res) => {
-    const { otp } = req.body;
-
+    const { email, otp } = req.body;
     try {
         const user = await User.findOne({
+            email, 
             resetPasswordToken: otp,
-            resetPasswordExpires: { $gt: Date.now() },
+            resetPasswordExpires: { $gt: new Date() }, 
         });
-
         if (!user) {
             return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
@@ -74,9 +72,9 @@ const verifyOtp = async (req, res) => {
         user.resetPasswordExpires = undefined;
         await user.save();
 
-        const token = generateJWT(user.id);
-        res.setHeader('Authorization', `Bearer ${token}`);
-        res.status(200).json({ message: 'OTP verified successfully', token });
+        const authToken = generateJWT(user.id);
+        res.setHeader('Authorization', `Bearer ${authToken}`);
+        res.status(200).json({ success: true,message: 'OTP verified successfully', authToken });
     } catch (error) {
         console.error('Error verifying OTP:', error);
         res.status(500).json({ message: 'Error verifying OTP', error: error.message });
@@ -86,21 +84,36 @@ const verifyOtp = async (req, res) => {
 const resetPassword = async (req, res) => {
     const { newPassword } = req.body;
 
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Token is required" });
+    }
+
+    const authToken = authHeader.split(" ")[1];
+
     try {
-        const user = req.user;
+        let decoded;
+        try {
+            decoded = verifyJWT(authToken); 
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+
+        const user = await User.findById(decoded.userId);
         if (!user) {
-            return res.status(401).json({ message: 'Unauthorized' });
+            return res.status(404).json({ message: "User not found" });
         }
 
         const hashedPassword = await hashPassword(newPassword);
         user.password = hashedPassword;
 
         await user.save();
-        res.status(200).json({ message: 'Password reset successfully' });
+        res.status(200).json({ success: true, message: "Password reset successfully" });
     } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({ message: 'Error resetting password', error: error.message });
+        console.error("Error resetting password:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 module.exports = { register, login, forgotPassword, verifyOtp, resetPassword };
