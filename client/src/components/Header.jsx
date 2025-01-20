@@ -7,7 +7,6 @@ const Header = () => {
   const isAuthenticated = localStorage.getItem('token');
 
   const handleLogout = () => {
-   
     localStorage.removeItem('token');
     
    

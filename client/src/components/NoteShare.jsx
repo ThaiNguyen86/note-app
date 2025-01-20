@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { encryptNote } from "../utils/encrypt";
+import { encryptNote } from "../utils/encryption";
 
 const NoteShare = () => {
    

@@ -1,7 +1,14 @@
-import Dashboard from "../components/Dashboard";
+import React from "react";
+import CreateNote from "../components/CreateNote";
+import NoteList from "../components/NoteList";
 
 const DashboardPage = () => {
-    return <Dashboard />;
+    return (
+        <div>
+            <CreateNote />
+            <NoteList />
+        </div>
+    );
 };
 
 export default DashboardPage;
