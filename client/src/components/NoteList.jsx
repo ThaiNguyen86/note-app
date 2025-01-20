@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import { generateKeyPair, computeSharedKey , encryptNote} from "../utils/encryption.jsx"; // Hàm hỗ trợ DH
+import { generateKeyPair, computeSharedKey} from "../utils/encryption.jsx"; 
 
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
-  const [users, setUsers] = useState([]);  // Danh sách người dùng
+  const [users, setUsers] = useState([]); 
   const [decryptionKeys, setDecryptionKeys] = useState({});
   const [decryptedNotes, setDecryptedNotes] = useState({});
-  const [sharedURLs, setSharedURLs] = useState({});  // Lưu URL chia sẻ cho từng ghi chú
+  const [sharedURLs, setSharedURLs] = useState({});  
   const [loading, setLoading] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null); // Người dùng được chọn để chia sẻ
+  const [selectedUser, setSelectedUser] = useState(null); 
 
-  // Fetch notes và users từ server
   useEffect(() => {
     const fetchNotesAndUsers = async () => {
       const token = localStorage.getItem("token");
@@ -40,9 +39,8 @@ const NoteList = () => {
   }, []);
   
 
-  // Hàm giải mã nội dung
   const decryptContent = (encryptedContent, key) => {
-    try {
+    try { 
       const bytes = CryptoJS.AES.decrypt(encryptedContent, key);
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (error) {
@@ -51,7 +49,6 @@ const NoteList = () => {
     }
   };
 
-  // Cập nhật khóa giải mã
   const handleKeyChange = (index, key) => {
     setDecryptionKeys((prevKeys) => ({
       ...prevKeys,
@@ -59,7 +56,6 @@ const NoteList = () => {
     }));
   };
 
-  // Giải mã nội dung khi nhấn nút
   const handleDecrypt = (index) => {
     const note = notes[index];
     const key = decryptionKeys[index];
@@ -80,7 +76,6 @@ const NoteList = () => {
       return; 
     }
   
-    // User input key for decryption
     const userKey = prompt("Vui lòng nhập khóa của bạn để giải mã ghi chú:");
   
     if (!userKey) {
@@ -88,37 +83,41 @@ const NoteList = () => {
       return;
     }
   
+    const time = prompt("Vui lòng nhập thời gian hết hạn (số giờ):");
+  
+    const expirationInHours = parseInt(time, 10);
+    if (isNaN(expirationInHours) || expirationInHours <= 0) {
+      alert("Thời gian không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+      return;
+    }
+  
     try {
       const note = notes[index];
       const { publicKey, privateKey } = generateKeyPair();
       
-      // Gửi publicKey của bạn đến người nhận và nhận lại publicKey của họ
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/exchange-key`,
         { publicKey, userId: selectedUser._id }
       );
       const recipientPublicKey = response.data.publicKey;
       
-      // Giải mã ghi chú với khóa mà người dùng nhập
       const decryptedContent = decryptContent(note.content, userKey);
   
-      // Nếu giải mã thất bại, dừng lại
       if (!decryptedContent) {
         alert("Không thể giải mã ghi chú. Vui lòng kiểm tra khóa!");
         return;
       }
   
-      // Tạo shared key từ privateKey của người gửi và publicKey của người nhận
       const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
       
-      // Mã hóa ghi chú đã giải mã với shared key
       const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
       console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
   
-      // Tạo URL chia sẻ
+      const expirationTime = new Date().getTime() + expirationInHours * 60 * 60 * 1000; // Convert hours to milliseconds
+  
       const sharedURL = `${window.location.origin}/shared-note?content=${encodeURIComponent(
         encryptedContent
-      )}&key=${encodeURIComponent(sharedKey)}`;
+      )}&key=${encodeURIComponent(sharedKey)}&expiresAt=${expirationTime}`;
   
       setSharedURLs((prevURLs) => ({
         ...prevURLs,
@@ -131,7 +130,7 @@ const NoteList = () => {
       alert("Không thể chia sẻ ghi chú. Vui lòng thử lại!");
     }
   };
-
+  
 
   return (
     <div >

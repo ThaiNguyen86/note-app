@@ -41,7 +41,6 @@ const AppRouter = () => {
                         }
                     />
 
-                    {/* 404 Page */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </main>

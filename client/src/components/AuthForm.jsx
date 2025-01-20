@@ -17,7 +17,7 @@ const AuthForm = ({ isLogin }) => {
                 await login(email, password);
                 navigate("/dashboard");
             } else {
-                await axios.post("http://localhost:3000/api/user/register", { email, password, username });
+                await axios.post(`${import.meta.env.VITE_API_URL}/user/register`, { email, password, username });
                 navigate("/login");
             }
         } catch (error) {

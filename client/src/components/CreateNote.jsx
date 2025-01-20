@@ -7,7 +7,6 @@ const ClientSideEncryption = () => {
   const [content, setContent] = useState('');
   const [encryptionKey, setEncryptionKey] = useState('');
 
-  // Hàm gửi dữ liệu đã mã hóa lên server
   const sendEncryptedData = async () => {
     if (!title || !content || !encryptionKey) {
       alert('Vui lòng nhập tiêu đề, nội dung và khóa mã hóa!');
@@ -15,26 +14,22 @@ const ClientSideEncryption = () => {
     }
 
     try {
-      // Mã hóa content
       const encryptedContent = CryptoJS.AES.encrypt(content, encryptionKey).toString();
 
-      // Lấy token từ local storage
       const token = localStorage.getItem('token');
       if (!token) {
         alert('Không tìm thấy token. Vui lòng đăng nhập!');
         return;
       }
-
-      // Gửi dữ liệu lên server kèm token
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/notes/create`,
         {
-          title, // Không mã hóa tiêu đề
-          content: encryptedContent, // Nội dung đã mã hóa
+          title, 
+          content: encryptedContent,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Thêm token vào header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -87,7 +82,7 @@ const ClientSideEncryption = () => {
       </div>
 
       <button onClick={sendEncryptedData} style={{ padding: '10px 15px' }}>
-        Gửi lên server
+        Tạo
       </button>
     </div>
   );

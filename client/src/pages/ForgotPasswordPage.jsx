@@ -24,7 +24,7 @@ const ForgotPasswordPage = () => {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:3000/api/user/forgot-password", { email });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/forgot-password`, { email });
             setMessage(response.data.message);
             setOtpSent(true);
         } catch (error) {
@@ -39,7 +39,7 @@ const ForgotPasswordPage = () => {
 
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:3000/api/user/verify-otp", { email, otp });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/verify-otp`, { email, otp });
             if (response.data.success) {
                 setOtpVerified(true);
                 setMessage("OTP xác thực thành công. Vui lòng nhập mật khẩu mới.");
@@ -53,8 +53,7 @@ const ForgotPasswordPage = () => {
             setLoading(false);
         }
     };
-
-    // Đổi mật khẩu mới
+    
     const handleSubmitNewPassword = async (e) => {
         e.preventDefault();
 
@@ -72,7 +71,7 @@ const ForgotPasswordPage = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:3000/api/user/change-password",
+                `${import.meta.env.VITE_API_URL}/user/change-password`,
                 { newPassword },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
