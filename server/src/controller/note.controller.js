@@ -1,28 +1,22 @@
 const Note = require('../models/note.model');
 
-const { encryptNote }= require('../utils/encryption.util');
 
 let notes = [];
 
 const createNote = async (req, res) => {
     const { title, content } = req.body;
 
-    console.log(title,content)
-
-    // Kiểm tra dữ liệu đầu vào
     if (!title || !content) {
         return res.status(400).json({ message: "Invalid data" });
     }
 
     try {
-        // Tạo mới ghi chú
         const note = new Note({
             title,
             content,
             userId: req.userId,
         });
 
-        // Lưu ghi chú vào cơ sở dữ liệu
         await note.save();
 
         res.status(201).json({ message: "Note created successfully" });
@@ -60,14 +54,4 @@ const getNotes = async (req, res) => {
 };
 
 
-
-const shareNote = (req, res) => {
-    const { noteId } = req.params;
-    
-};
-
-const deleteNote = (req, res) => {
-    const { noteId } = req.params;
-};
-
-module.exports = { createNote, getNote, shareNote, deleteNote, getNotes};
+module.exports = { createNote, getNote, getNotes};

@@ -3,16 +3,16 @@ const mongoose = require('mongoose');
 const noteSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', // Tham chiếu đến bảng User
-        required: true // Đảm bảo rằng mỗi ghi chú đều phải có userId
+        ref: 'User', 
+        required: true 
     },
     title: {
         type: String,
-        required: true // Tiêu đề là bắt buộc
+        required: true 
     },
     content: {
         type: String, 
-        required: true // Nội dung ghi chú là bắt buộc
+        required: true 
     },
     createdAt: {
         type: Date,

@@ -1,10 +1,11 @@
 const User = require('../models/user.model');
 const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../utils/auth.util');
-const { sendPasswordResetEmail } = require('../helpers/auth.helper');
+const { sendPasswordResetEmail,generateKeyPair } = require('../helpers/auth.helper');
+const crypto = require("crypto");
+
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
-    console.log(username, email, password )
     try {
         const emailExists = await User.findOne({ email });
         if (emailExists) {
@@ -24,7 +25,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(email,password)
 
     try {
         const user = await User.findOne({ email });
@@ -132,4 +132,32 @@ const getUsers = async (req, res) => {
 };
 
 
-module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers };
+const exchangeKey = async (req, res) => {
+    const { publicKey, userId } = req.body;
+  
+    if (!publicKey || !userId) {
+      return res.status(400).json({ message: "Thiếu publicKey hoặc userId" });
+    }
+  
+    try {
+      let user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "Người dùng không tồn tại" });
+      }
+  
+      if (!user.publicKey) {
+        const { publicKey: generatedPublicKey, privateKey } = generateKeyPair();
+        user.publicKey = generatedPublicKey;
+        await user.save();
+      }
+  
+      res.json({ publicKey: user.publicKey });
+    } catch (error) {
+      console.error("Lỗi khi trao đổi khóa:", error);
+      res.status(500).json({ message: "Lỗi máy chủ khi trao đổi khóa" });
+    }
+  };
+
+
+module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, exchangeKey };

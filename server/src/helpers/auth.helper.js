@@ -1,9 +1,9 @@
-// server/helpers/auth.helper.js
 const { generateRandomCode } = require('../utils/auth.util');
 const User = require('../models/user.model');
 const { sendEmail } = require('./email.helper');
 const fs = require('fs');
 const path = require('path');
+const crypto = require("crypto");
 
 const sendPasswordResetEmail = async (email, expiryMinutes = 60) => {
     const user = await User.findOne({ email });
@@ -35,5 +35,16 @@ const sendPasswordResetEmail = async (email, expiryMinutes = 60) => {
     return resetCode;
 };
 
+const generateKeyPair = () => {
+    const { publicKey, privateKey } = crypto.generateKeyPairSync("ec", {
+      namedCurve: "secp256k1", // Chọn thuật toán SECP256k1 cho khóa EC
+    });
+    return {
+      publicKey: publicKey.export({ type: "spki", format: "pem" }),
+      privateKey: privateKey.export({ type: "pkcs8", format: "pem" }),
+    };
+  };
+  
 
-module.exports = { sendPasswordResetEmail};
+
+module.exports = { sendPasswordResetEmail,generateKeyPair};
