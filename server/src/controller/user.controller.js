@@ -4,6 +4,7 @@ const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
+    console.log(username, email, password )
     try {
         const emailExists = await User.findOne({ email });
         if (emailExists) {
@@ -22,10 +23,11 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { email, password } = req.body;
+    console.log(email,password)
 
     try {
-        const user = await User.findOne({ $or: [{ username }, { email }] });
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
@@ -36,13 +38,17 @@ const login = async (req, res) => {
         }
 
         const token = generateJWT(user.id);
+
+        const { password: _, ...userWithoutPassword } = user.toObject();
+
         res.setHeader('Authorization', `Bearer ${token}`);
-        res.status(200).json({ message: 'Login successful', token, user});
+        res.status(200).json({ message: 'Login successful', token, user: userWithoutPassword });
     } catch (error) {
         console.error('Error logging in:', error);
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 };
+
 
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
@@ -115,5 +121,15 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, { password: 0 });
+        res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ success: false, message: "Error fetching users" });
+    }
+};
 
-module.exports = { register, login, forgotPassword, verifyOtp, resetPassword };
+
+module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers };
