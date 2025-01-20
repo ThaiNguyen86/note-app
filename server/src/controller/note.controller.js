@@ -1,68 +1,65 @@
 const Note = require('../models/note.model');
 
-const { encryptNote, decryptNote, generateSharedKey } = require('../utils/encryption.util');
+const { encryptNote }= require('../utils/encryption.util');
+
+let notes = [];
 
 const createNote = async (req, res) => {
+    const { title, content } = req.body;
+
+    console.log(title,content)
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!title || !content) {
+        return res.status(400).json({ message: "Invalid data" });
+    }
+
     try {
-        const { title, content, iv } = req.body;
-        const userId = req.userId;
-
-        if (!content || !title) {
-            return res.status(400).json({ message: "Title and content are required." });
-        }
-
-        const newNote = new Note({
-            userId,
+        // Tạo mới ghi chú
+        const note = new Note({
             title,
-            content,  
-            iv,     
-            createdAt: new Date(),
-            updatedAt: new Date()
+            content,
+            userId: req.userId,
         });
 
-        await newNote.save();
+        // Lưu ghi chú vào cơ sở dữ liệu
+        await note.save();
 
-        res.status(201).json({
-            message: "Note created successfully!",
-            note: {
-                id: newNote._id,
-                title: newNote.title,
-                createdAt: newNote.createdAt
-            }
-        });
+        res.status(201).json({ message: "Note created successfully" });
     } catch (error) {
         console.error("Error creating note:", error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
-const getNote = async (req, res) => {
-    try {
-        const { noteId } = req.params;
-        const userId = req.userId;
+const getNote = (req, res) => {
+    const noteId = req.params.id;
+    const note = notes[noteId];
 
-        const note = await Note.findOne({ _id: noteId, userId });
-
-        if (!note) {
-            return res.status(404).json({ message: 'Note not found' });
-        }
-
-        res.status(200).json({
-            message: 'Note retrieved successfully',
-            note: {
-                id: note._id,
-                title: note.title,
-                content: note.content,  
-                iv: note.iv,    
-                createdAt: note.createdAt,
-                updatedAt: note.updatedAt
-            }
-        });
-    } catch (error) {
-        console.error("Error retrieving note:", error);
-        res.status(500).json({ message: 'Server error' });
+    if (!note) {
+        return res.status(404).json({ message: 'Note not found' });
     }
+
+    const currentTime = new Date();
+    if (currentTime > new Date(note.metadata.expirationTime)) {
+        return res.status(400).json({ message: 'Access expired' });
+    }
+
+    if (note.metadata.accessCount >= note.metadata.maxAccessCount) {
+        return res.status(400).json({ message: 'Max access count reached' });
+    }
+
+    note.metadata.accessCount += 1;
+    res.json({ message: 'Note accessed successfully', noteContent: note.content });
 };
+
+
+const getNotes = async (req, res) => {
+    const notes = await Note.find({ userId: req.userId});
+    res.json(notes);
+};
+
+
 
 const shareNote = (req, res) => {
     const { noteId } = req.params;
@@ -73,4 +70,4 @@ const deleteNote = (req, res) => {
     const { noteId } = req.params;
 };
 
-module.exports = { createNote, getNote, shareNote, deleteNote};
+module.exports = { createNote, getNote, shareNote, deleteNote, getNotes};

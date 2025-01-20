@@ -37,7 +37,7 @@ const login = async (req, res) => {
 
         const token = generateJWT(user.id);
         res.setHeader('Authorization', `Bearer ${token}`);
-        res.status(200).json({ message: 'Login successful', token });
+        res.status(200).json({ message: 'Login successful', token, user});
     } catch (error) {
         console.error('Error logging in:', error);
         res.status(500).json({ message: 'Error logging in', error: error.message });
