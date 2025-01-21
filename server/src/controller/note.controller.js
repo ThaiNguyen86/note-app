@@ -53,5 +53,30 @@ const getNotes = async (req, res) => {
     res.json(notes);
 };
 
+const deleteNote = async (req, res) => {
+    try {
+        const noteId = req.params.noteId;
+        const deletedNote = await Note.findByIdAndDelete(noteId);
 
-module.exports = { createNote, getNote, getNotes};
+        if (!deletedNote) {
+            return res.status(404).json({
+                success: false,
+                message: 'Không tìm thấy ghi chú',
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Xoá ghi chú thành công',
+            deletedNote,
+        });
+    } catch (error) {
+        console.error('Có lỗi khi đang xoá ghi chú:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Lỗi máy chủ khi xoá ghi chú',
+        });
+    }
+};
+
+
+module.exports = { createNote, getNote, getNotes, deleteNote };
