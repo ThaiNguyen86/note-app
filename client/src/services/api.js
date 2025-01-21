@@ -55,3 +55,14 @@ export const loginUser = async (username, password) => {
 
   return await graphqlQuery(query, variables);  // Gọi graphqlQuery và trả về token và người dùng đăng nhập
 };
+
+export const getAllFolders = async () => {
+  const query = `query {
+      folder {
+          id
+          name
+          createdAt
+      }
+  }`;
+  return await graphqlQuery(query);
+}
