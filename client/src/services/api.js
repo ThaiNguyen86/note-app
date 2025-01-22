@@ -67,3 +67,20 @@ export const getAllFolders = async () => {
   return await graphqlQuery(query);
 }
 
+export const addNewFolder = async (newFolder) => {
+  const query = `mutation Mutation($name: String!) {
+    addFolder(name: $name) {
+      name
+      author {
+        name
+      }
+    }
+  }`;
+
+  const data = await graphQLRequest({
+    query,
+    variables: { name: newFolder.name },
+  });
+
+  return data;
+};

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
+import NewFolder from './NewFolder';
 
 export default function FolderList({ folders }) {
   // State lưu trữ id của folder đang được chọn
@@ -17,6 +18,7 @@ export default function FolderList({ folders }) {
       {/* Header */}
       <div className="flex justify-between items-center mb-2">
         <h5 className="font-bold text-xl text-white">Folders</h5>
+        <NewFolder />  
       </div>
 
       {/* Folder List with Scroll */}
