@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import axios from "axios";
-<<<<<<< HEAD
-=======
 import 'bootstrap/dist/css/bootstrap.min.css';
->>>>>>> origin/thuandoan
 import { generateKeyPair, computeSharedKey } from "../utils/encryption.jsx";
 
 const NoteList = ({ refresh }) => {
@@ -149,75 +146,6 @@ const NoteList = ({ refresh }) => {
 
 
   return (
-<<<<<<< HEAD
-    <div >
-      <h2>Danh sách ghi chú</h2>
-
-      {loading ? (
-        <p>Đang tải ghi chú...</p>
-      ) : notes.length === 0 ? (
-        <p>Không có ghi chú nào.</p>
-      ) : (
-        <ul>
-          {notes.map((note, index) => (
-            <li
-              key={index}
-            >
-              <h3>{note.title}</h3>
-              <div>
-                <label>Khóa giải mã:</label>
-                <input
-                  type="text"
-                  value={decryptionKeys[index] || ""}
-                  onChange={(e) => handleKeyChange(index, e.target.value)}
-                  placeholder="Nhập khóa giải mã"
-                />
-              </div>
-              <button
-                onClick={() => handleDecrypt(index)}
-              >
-                Giải mã
-              </button>
-              <button
-                onClick={() => deleteNote(note._id)}
-              >
-                Xóa
-              </button>
-              <div>
-                <label>Chọn người nhận:</label>
-                <select
-                  onChange={(e) =>
-                    setSelectedUser(users.find((user) => user._id === e.target.value))
-                  }
-                >
-                  <option value="">--Chọn người nhận--</option>
-                  {users.map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.username} ({user.email})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => handleShare(index)}
-              >
-                Chia sẻ
-              </button>
-              {sharedURLs[index] && (
-                <p>
-                  URL chia sẻ:{" "}
-                  <a href={sharedURLs[index]} target="_blank" rel="noopener noreferrer">
-                    {sharedURLs[index]}
-                  </a>
-                </p>
-              )}
-              <p style={{ marginTop: "10px" }}>
-                {decryptedNotes[index] || "Nội dung đã được mã hóa"}
-              </p>
-            </li>
-          ))}
-        </ul>
-=======
     <div className="container">
       <h2 className="text-center mb-4 fw-bold">Danh sách ghi chú</h2>
 
@@ -297,7 +225,6 @@ const NoteList = ({ refresh }) => {
             </div>
           ))}
         </div>
->>>>>>> origin/thuandoan
       )}
     </div>
   );

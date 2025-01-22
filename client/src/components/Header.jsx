@@ -1,52 +1,53 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Header = () => {
-  const navigate = useNavigate();
-  
-  const isAuthenticated = localStorage.getItem('token');
+    const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    
-   
-    navigate('/');
-  };
+    const handleLogout = () => {
+        // Xóa dữ liệu liên quan đến phiên người dùng (VD: token, thông tin đăng nhập)
+        localStorage.removeItem('authToken'); // Xóa token hoặc thông tin xác thực
+        // Điều hướng người dùng trở lại trang đăng nhập
+        navigate('/login');
+    };
 
-  return (
-    <header className="header">
-      <Link to="/"><h1>Secure Notes</h1></Link>
-      <nav>
-        <ul className="nav-list">
-          <li className="nav-item">
-            <Link to="/">Home</Link>
-          </li>
-          {isAuthenticated ? (
-            <>
-              <li className="nav-item">
-                <Link to="/dashboard">Dashboard</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/notes">My Notes</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/" onClick={handleLogout}>Logout</Link> 
-              </li>
-            </>
-          ) : (
-            <>
-              <li className="nav-item">
-                <Link to="/login">Login</Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/register">Register</Link>
-              </li>
-            </>
-          )}
-        </ul>
-      </nav>
-    </header>
-  );
+    return (
+        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div className="container">
+                <Link className="navbar-brand" to="/">NoteApp</Link>
+                <button
+                    className="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarNav">
+                    <ul className="navbar-nav ml-auto">
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/">Home</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/mynotes">My Notes</Link>
+                        </li>
+                        <li className="nav-item">
+                            <button className="btn btn-link nav-link" onClick={handleLogout}>
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    );
 };
 
 export default Header;
