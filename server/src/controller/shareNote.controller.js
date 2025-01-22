@@ -40,9 +40,14 @@ const getShareNote = async (req, res) => {
             return res.status(410).json({ message: "Liên kết chia sẻ đã hết hạn" });
         }
 
-        if ( shareNote.userId.toString() == userId || shareNote.userShareId.toString() == userId ) {
+        if ( shareNote.userShareId.toString() == userId) {
             res.status(200).json({ message: "Lấy ghi chú thành công", shareNote });
-        }else{
+        }else if (shareNote.userId.toString() == userId ) {
+            res.status(200).json({ message: "Lấy ghi chú thành công", shareNote });
+            shareNote.publicKey = null;
+            await shareNote.save();
+        }
+        else{
             return res.status(403).json({ message: "Bạn không có quyền truy cập ghi chú này" });
         }
     } catch (error) {

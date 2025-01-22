@@ -116,7 +116,7 @@ const NoteList = ({ refresh }) => {
 
         const { publicKey, privateKey } = generateKeyPair();
 
-        const recipientPublicKey = publicKey; 
+        const recipientPublicKey =  selectedUser.publicKey; 
 
         const decryptedContent = decryptContent(note.content, userKey);
 
@@ -128,7 +128,6 @@ const NoteList = ({ refresh }) => {
         const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
 
         const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-        console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
 
         const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000; 
 
