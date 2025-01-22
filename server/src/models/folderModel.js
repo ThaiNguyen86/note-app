@@ -9,6 +9,10 @@ const folderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    notes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Note",
+    }],
 }, { timestamps: true }); //auto add createdAt, updatedAt fields into document
 
 const FolderModel = mongoose.model("Folder", folderSchema);
