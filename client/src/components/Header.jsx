@@ -1,61 +1,55 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from "../contexts/AuthContext"; // Import useAuth từ AuthContext
-import 'bootstrap/dist/css/bootstrap.min.css';
-import avatar from './avatar.jpg'; // Import tệp avatar.jpg
+import { Link } from 'react-router-dom';
+import { useAuth } from "../contexts/AuthContext"; // Import useAuth from AuthContext
+import avatar from './avatar.jpg'; // Import avatar.jpg file
+import { toast} from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Header = () => {
-    const navigate = useNavigate();
-    const { user, logout } = useAuth(); // Lấy thông tin user và hàm logout từ AuthContext
-
+    const { user, logout } = useAuth(); // Get user info and logout function from AuthContext
     const handleLogout = () => {
-        logout(); // Gọi hàm logout từ AuthContext
-        navigate('/login'); // Điều hướng người dùng trở lại trang đăng nhập
+        const res = logout(); // Call logout function from AuthContext
+        if (res.success) {
+            console.log("Logout successful!", res);
+            toast.success("Logout successful!");
+            window.location.reload();
+        } else {
+            toast.error("Logout failed!");
+        }
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div className="container">
-                <Link className="navbar-brand" to="/">NoteApp</Link>
-                <button
-                    className="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav w-100 d-flex justify-content-around">
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/">Home</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/dashboard">Dashboard</Link>
-                        </li>
-                    </ul>
-                    <div className="d-flex align-items-center">
-                        {user ? ( // Kiểm tra xem user đã đăng nhập hay chưa
+
+        <nav className="bg-custom-green shadow-lg ">
+            <div className="container mx-auto flex justify-between items-center py-2">
+                <div className="flex items-center space-x-8">
+                    <Link className="text-white hover:!text-custom-yellow font-bold text-xl transition-colors duration-300" to="/">NoteApp</Link>
+                    <Link className="text-white hover:!text-custom-yellow font-semibold transition-colors duration-300 hover:font-bold" to="/">Home</Link>
+                    <Link className="text-white hover:!text-custom-yellow font-semibold transition-colors duration-300 hover:font-bold" to="/dashboard">Add Note</Link>
+                </div>
+                <div className="flex items-center">
+                    <div className="flex items-center">
+                        {user ? (
                             <>
                                 <button
-                                    className="btn btn-outline-light me-3"
+                                    className="text-white hover:!text-custom-yellow font-semibold rounded-md px-4 py-2 transition duration-300 ease-in-out hover:font-bold"
                                     onClick={handleLogout}
                                 >
-                                    Logout
+                                    LogOut
                                 </button>
                                 <img
                                     src={avatar}
                                     alt="Avatar"
-                                    className="rounded-circle me-2"
-                                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                                    className="rounded-full w-10 h-10 object-cover border-2 border-white ml-4"
                                 />
-                                <span className="text-white">{user.username}</span> {/* Hiển thị email người dùng */}
+                                <span className="text-white font-medium ml-2">{user.username}</span>
                             </>
                         ) : (
-                            <Link to="/register" className="btn btn-outline-light me-3">
+                            <Link
+                                to="/register"
+                                className="text-white hover:!text-custom-yellow font-semibold rounded-md px-4 py-2 transition duration-300 ease-in-out hover:font-bold"
+                            >
                                 Register
                             </Link>
                         )}

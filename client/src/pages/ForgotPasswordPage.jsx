@@ -18,7 +18,7 @@ const ForgotPasswordPage = () => {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            setMessage("Email không hợp lệ.");
+            setMessage("Non valid email");
             return;
         }
 
@@ -28,7 +28,7 @@ const ForgotPasswordPage = () => {
             setMessage(response.data.message);
             setOtpSent(true);
         } catch (error) {
-            setMessage(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+            setMessage(error.response?.data?.message || "Has an error! Please try again.");
         } finally {
             setLoading(false);
         }
@@ -42,29 +42,29 @@ const ForgotPasswordPage = () => {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/verify-otp`, { email, otp });
             if (response.data.success) {
                 setOtpVerified(true);
-                setMessage("OTP xác thực thành công. Vui lòng nhập mật khẩu mới.");
+                setMessage("Verified OTP. Please enter new password.");
                 localStorage.setItem("authToken", response.data.authToken);
             } else {
-                setMessage("OTP không hợp lệ. Vui lòng thử lại.");
+                setMessage("OTP is invalid! Please try again.");
             }
         } catch (error) {
-            setMessage(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+            setMessage(error.response?.data?.message || "Has an error! Please try again.");
         } finally {
             setLoading(false);
         }
     };
-    
+
     const handleSubmitNewPassword = async (e) => {
         e.preventDefault();
 
         if (newPassword !== confirmPassword) {
-            setMessage("Mật khẩu và xác nhận mật khẩu không khớp.");
+            setMessage("Password and confirm password do not match.");
             return;
         }
 
         const token = localStorage.getItem("authToken");
         if (!token) {
-            setMessage("Lỗi xác thực, vui lòng thử lại.");
+            setMessage("Token not found! Please try again.");
             return;
         }
 
@@ -82,65 +82,101 @@ const ForgotPasswordPage = () => {
                 navigate("/login");
             }
         } catch (error) {
-            setMessage(error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+            setMessage(error.response?.data?.message || "Has an error! Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div>
-            <h2>Quên mật khẩu</h2>
+        <div className="min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-emerald-300 to-amber-200">
+            <div className="card shadow-lg p-4 w-100" style={{ maxWidth: '400px' }}>
+                <h2 className="text-center font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 mb-3">
+                    Forgot Password
+                </h2>
 
-            {!otpSent ? (
-                <form onSubmit={handleSubmitEmail}>
-                    <input
-                        type="email"
-                        placeholder="Nhập email của bạn"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    <button type="submit" disabled={loading}>
-                        {loading ? "Đang xử lý..." : "Gửi yêu cầu"}
-                    </button>
-                </form>
-            ) : !otpVerified ? (
-                <form onSubmit={handleSubmitOtp}>
-                    <input
-                        type="text"
-                        placeholder="Nhập mã OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        required
-                    />
-                    <button type="submit" disabled={loading}>
-                        {loading ? "Đang xử lý..." : "Xác thực OTP"}
-                    </button>
-                </form>
-            ) : (
-                <form onSubmit={handleSubmitNewPassword}>
-                    <input
-                        type="password"
-                        placeholder="Nhập mật khẩu mới"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="password"
-                        placeholder="Xác nhận mật khẩu mới"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
-                    <button type="submit" disabled={loading}>
-                        {loading ? "Đang xử lý..." : "Đổi mật khẩu"}
-                    </button>
-                </form>
-            )}
+                {!otpSent ? (
+                    <form onSubmit={handleSubmitEmail}>
+                        <div>
+                            <input
+                                type="email"
+                                className="form-control w-full px-4 py-2 mb-4 border rounded focus:ring focus:outline-none"
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                disabled={loading}
+                            >
+                                {loading ? "Loading..." : "Send request"}
+                            </button>
+                        </div>
+                    </form>
+                ) : !otpVerified ? (
+                    <form onSubmit={handleSubmitOtp} className="space-y-4">
+                        <div>
+                            <input
+                                type="text"
+                                className="form-control w-full px-4 py-2 border rounded focus:ring focus:outline-none"
+                                placeholder="Enter OTP"
+                                value={otp}
+                                onChange={(e) => setOtp(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                disabled={loading}
+                            >
+                                {loading ? "Loading..." : "OTP verification"}
+                            </button>
+                        </div>
+                    </form>
+                ) : (
+                    <form onSubmit={handleSubmitNewPassword} className="space-y-4">
+                        <div>
+                            <input
+                                type="password"
+                                className="form-control w-full px-4 py-2 border rounded focus:ring focus:outline-none"
+                                placeholder="New password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="password"
+                                className="form-control w-full px-4 py-2 border rounded focus:ring focus:outline-none"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                disabled={loading}
+                            >
+                                {loading ? "Loading..." : "Change Password"}
+                            </button>
+                        </div>
+                    </form>
+                )}
 
-            {message && <p>{message}</p>}
+                {message && (
+                    <p className="mt-4 text-center text-red-600 font-semibold">{message}</p>
+                )}
+            </div>
         </div>
     );
 };

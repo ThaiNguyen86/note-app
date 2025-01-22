@@ -2,20 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const NotFoundPage = () => {
-    const navigate = useNavigate(); // Hook để điều hướng
+    const navigate = useNavigate(); // Hook for navigation
 
     const handleGoBack = () => {
-        navigate(-1); // Quay lại trang trước đó
+        navigate(-1); // Go back to the previous page
     };
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.title}>404 - Trang không tồn tại</h1>
+            <h1 style={styles.title}>404 - Page Not Found</h1>
             <p style={styles.message}>
-                Oops! Có vẻ như trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
+                Oops! It looks like the page you are looking for does not exist or has been removed.
             </p>
             <button style={styles.button} onClick={handleGoBack}>
-                Quay lại
+                Go Back
             </button>
         </div>
     );

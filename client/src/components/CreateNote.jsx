@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ClientSideEncryption = ({ onNoteCreated }) => {
   const [title, setTitle] = useState('');
@@ -10,7 +10,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
 
   const sendEncryptedData = async () => {
     if (!title || !content || !encryptionKey) {
-      alert('Vui lòng nhập tiêu đề, nội dung và khóa mã hóa!');
+      toast.warning('Please enter title, content, and encryption key!');
       return;
     }
 
@@ -19,69 +19,76 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
 
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Không tìm thấy token. Vui lòng đăng nhập!');
+        toast.error('Token not found. Please log in!');
         return;
       }
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/notes/create`,
         {
-          title, 
+          title,
           content: encryptedContent,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      console.log(response.data.message || 'Dữ liệu đã được gửi thành công!');
-      alert('Tạo ghi chú thành công!');
-      setTitle(''); 
-      setContent(''); 
+      
+      if (response.status === 201) {
+        toast.success('Note created successfully!');
+      }
+      setTitle('');
+      setContent('');
       setEncryptionKey('');
       if (onNoteCreated) {
         onNoteCreated();
       }
     } catch (error) {
-      console.error('Lỗi khi gửi dữ liệu:', error);
-      alert('Có lỗi xảy ra. Vui lòng thử lại!');
+      console.error('Error sending data:', error);
+      toast.error('An error occurred. Please try again!');
     }
   };
 
   return (
     <div className="container mt-5">
       <div className="card shadow p-4">
-        <h2 className="text-center mb-4 fw-bold">Client-side Encryption</h2>
+        <h2 className="text-center mb-4 fw-bold text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 text-xl">Create Note</h2>
 
         <div className="mb-3">
-          <label className="form-label">Khóa mã hóa:</label>
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+            Encryption Key: <span style={{ color: "red" }}>*</span>
+          </label>
           <input
             type="text"
             value={encryptionKey}
             onChange={(e) => setEncryptionKey(e.target.value)}
-            placeholder="Nhập khóa mã hóa"
+            placeholder="Enter encryption key"
             className="form-control"
           />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Tiêu đề:</label>
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+            Title: <span style={{ color: "red" }}>*</span>
+          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Nhập tiêu đề"
+            placeholder="Enter title"
             className="form-control"
           />
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Nội dung:</label>
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+            Content: <span style={{ color: "red" }}>*</span>
+          </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Nhập nội dung"
+            placeholder="Enter content"
             className="form-control"
             rows="5"
           ></textarea>
@@ -89,7 +96,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
 
         <div className="d-flex justify-content-end">
           <button onClick={sendEncryptedData} className="btn btn-primary btn-lg">
-            Tạo
+            Create
           </button>
         </div>
       </div>

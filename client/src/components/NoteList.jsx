@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { toast, ToastContainer } from "react-toastify";
 import { generateKeyPair, computeSharedKey } from "../utils/encryption.jsx";
 
 const NoteList = ({ refresh }) => {
@@ -17,14 +17,13 @@ const NoteList = ({ refresh }) => {
   const getUserIdFromLocalStorage = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user && user._id) {
-        return user._id;  
+      return user._id;
     }
-    return null;  
-};
+    return null;
+  };
 
   useEffect(() => {
     const fetchNotesAndUsers = async () => {
-
       setLoading(true);
       try {
         const [notesResponse, usersResponse] = await Promise.all([
@@ -38,8 +37,8 @@ const NoteList = ({ refresh }) => {
         setNotes(notesResponse.data);
         setUsers(usersResponse.data.users);
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu từ server:", error);
-        alert("Không thể tải ghi chú hoặc danh sách người dùng. Vui lòng thử lại!");
+        console.error("Error fetching data from server:", error);
+        toast.error("Unable to load notes or user list. Please try again!");
       } finally {
         setLoading(false);
       }
@@ -50,13 +49,16 @@ const NoteList = ({ refresh }) => {
 
   const deleteNote = async (noteId) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${noteId}`, {
+      const res = await axios.delete(`${import.meta.env.VITE_API_URL}/notes/${noteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNotes(notes.filter(note => note._id !== noteId));
+      if (res.status === 200) {
+        setNotes(notes.filter(note => note._id !== noteId));
+        toast.success("Note deleted successfully!");
+      }
     } catch (error) {
-      console.error("Lỗi khi xoá ghi chú:", error);
-      alert("Không thể xoá ghi chú. Vui lòng thử lại!");
+      console.error("Error deleting note:", error);
+      toast.error("Unable to delete note. Please try again!");
     }
   };
 
@@ -65,8 +67,8 @@ const NoteList = ({ refresh }) => {
       const bytes = CryptoJS.AES.decrypt(encryptedContent, key);
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (error) {
-      console.error("Lỗi khi giải mã:", error);
-      return "Không thể giải mã nội dung";
+      console.error("Error decrypting:", error);
+      return "Unable to decrypt content";
     }
   };
 
@@ -81,7 +83,7 @@ const NoteList = ({ refresh }) => {
     const note = notes[index];
     const key = decryptionKeys[index];
     if (!key) {
-      alert("Vui lòng nhập khóa giải mã!");
+      toast.warning("Please enter the decryption key!");
       return;
     }
     const decrypted = decryptContent(note.content, key);
@@ -93,84 +95,83 @@ const NoteList = ({ refresh }) => {
 
   const handleShare = async (index) => {
     if (!selectedUser) {
-        alert("Vui lòng chọn người nhận để chia sẻ ghi chú!");
-        return;
+      toast.warning("Please select a recipient to share the note!");
+      return;
     }
 
-    const userKey = prompt("Vui lòng nhập khóa của bạn để giải mã ghi chú:");
+    const userKey = prompt("Please enter your key to decrypt the note:");
 
     if (!userKey) {
-        alert("Khóa không hợp lệ. Vui lòng thử lại!");
-        return;
+      toast.error("Invalid key. Please try again!");
+      return;
     }
 
-    const time = prompt("Vui lòng nhập thời gian hết hạn (số phút):");
+    const time = prompt("Please enter the expiration time (in minutes):");
 
     const expirationInMinutes = parseInt(time, 10);
     if (isNaN(expirationInMinutes) || expirationInMinutes <= 0) {
-        alert("Thời gian không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
-        return;
+      toast.error("Invalid time. Please enter a number greater than 0!");
+      return;
     }
 
     try {
-        const note = notes[index];
+      const note = notes[index];
 
-        const { publicKey, privateKey } = generateKeyPair();
+      const { publicKey, privateKey } = generateKeyPair();
 
-        const recipientPublicKey = publicKey; 
+      const recipientPublicKey = publicKey;
 
-        const decryptedContent = decryptContent(note.content, userKey);
+      const decryptedContent = decryptContent(note.content, userKey);
 
-        if (!decryptedContent) {
-            alert("Không thể giải mã ghi chú. Vui lòng kiểm tra khóa!");
-            return;
+      if (!decryptedContent) {
+        toast.error("Cannot decrypt note. Please try again!");
+        return;
+      }
+
+      const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
+
+      const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
+      console.log("Note after decryption and re-encryption:", encryptedContent);
+
+      const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000;
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/notes/share/create`,
+        {
+          sharedKey,
+          userId: selectedUser._id,
+          userShareId: getUserIdFromLocalStorage(),
+          expirationTime: expirationTime
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
 
-        const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
+      const shareNoteId = response.data.shareNote._id;
+      const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
 
-        const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-        console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
+      setSharedURLs((prevURLs) => ({
+        ...prevURLs,
+        [index]: sharedURL,
+      }));
 
-        const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000; 
-
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/notes/share/create`,
-            {
-                sharedKey, 
-                userId: selectedUser._id, 
-                userShareId: getUserIdFromLocalStorage(), 
-                expirationTime: expirationTime
-            },
-             {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-        );
-
-        const shareNoteId = response.data.shareNote._id;
-        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
-
-        setSharedURLs((prevURLs) => ({
-            ...prevURLs,
-            [index]: sharedURL,
-        }));
-
-       
-        alert("Ghi chú đã được chia sẻ thành công!");
+      toast.success("Note shared successfully!");
     } catch (error) {
-        console.error("Lỗi khi chia sẻ ghi chú:", error);
-        alert("Không thể chia sẻ ghi chú. Vui lòng thử lại!");
+      console.error("Error", error);
+      toast.error("Cannot share note. Please try again!");
     }
-};
-
+  };
 
   return (
     <div className="container">
-      <h2 className="text-center mb-4 fw-bold">Danh sách ghi chú</h2>
+      <ToastContainer autoClose={1500} />
+      <h2 className="text-center mb-4 text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold text-xl">Note List</h2>
 
       {loading ? (
-        <p className="text-center text-secondary">Đang tải ghi chú...</p>
+        <p className="text-center text-secondary">Loading notes...</p>
       ) : notes.length === 0 ? (
-        <p className="text-center text-muted">Không có ghi chú nào.</p>
+        <p className="text-center text-muted">No notes available.</p>
       ) : (
         <div className="row">
           {notes.map((note, index) => (
@@ -180,14 +181,14 @@ const NoteList = ({ refresh }) => {
             >
               <div className="card shadow border-primary">
                 <div className="card-body">
-                  <h3 className="card-title text-dark">Tiêu đề: {note.title}</h3>
+                  <h3 className="card-title text-dark">Title: {note.title}</h3>
                   <div className="mb-3">
-                    <label className="form-label">Khóa giải mã:</label>
+                    <label className="form-label">Decryption Key:</label>
                     <input
                       type="text"
                       value={decryptionKeys[index] || ""}
                       onChange={(e) => handleKeyChange(index, e.target.value)}
-                      placeholder="Nhập khóa giải mã"
+                      placeholder="Enter decryption key"
                       className="form-control"
                     />
                   </div>
@@ -196,24 +197,24 @@ const NoteList = ({ refresh }) => {
                       onClick={() => handleDecrypt(index)}
                       className="btn btn-primary mt-3"
                     >
-                      Giải mã
+                      Decrypt
                     </button>
                     <button
                       onClick={() => deleteNote(note._id)}
                       className="btn btn-danger mt-3"
                     >
-                      Xóa
+                      Delete
                     </button>
                   </div>
                   <div className="mt-3">
-                    <label className="form-label">Chọn người nhận:</label>
+                    <label className="form-label">Select Recipient:</label>
                     <select
                       onChange={(e) =>
                         setSelectedUser(users.find((user) => user._id === e.target.value))
                       }
                       className="form-select"
                     >
-                      <option value="">--Chọn người nhận--</option>
+                      <option value="">--Select Recipient--</option>
                       {users.map((user) => (
                         <option key={user._id} value={user._id}>
                           {user.username} ({user.email})
@@ -225,18 +226,18 @@ const NoteList = ({ refresh }) => {
                     onClick={() => handleShare(index)}
                     className="btn btn-primary mt-3"
                   >
-                    Chia sẻ
+                    Share
                   </button>
                   {sharedURLs[index] && (
                     <p className="mt-2">
-                      URL chia sẻ:{" "}
+                      Share URL:{" "}
                       <a href={sharedURLs[index]} target="_blank" rel="noopener noreferrer">
                         {sharedURLs[index]}
                       </a>
                     </p>
                   )}
                   <p className="mt-3 text-secondary">
-                    {decryptedNotes[index] || "Nội dung đã được mã hóa"}
+                    {decryptedNotes[index] || "Content is encrypted"}
                   </p>
                 </div>
               </div>

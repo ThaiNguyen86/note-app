@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         'custom-green': 'rgb(97, 148, 138)', 
         'custom-gray': 'rgb(198, 199, 193)', 
-        'custom-yellow': 'rgb(219, 188, 18)',
+        'custom-yellow': 'rgb(255, 219, 16)',
       },
       fontFamily: {
         'dm-sans': ['DM Sans', 'sans-serif'],

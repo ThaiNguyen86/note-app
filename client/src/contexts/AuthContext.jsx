@@ -15,12 +15,18 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, { email, password });
+            
             const { token, user } = response.data;  
-
             setToken(token);
             setUser(user);
             localStorage.setItem("token", token);
             localStorage.setItem("user", JSON.stringify(user)); 
+            return {
+                token,
+                user,
+                status: response.status
+            }
+            
         } catch (error) {
             throw new Error("Login failed");
         }
@@ -31,6 +37,18 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+            return {
+                success: true
+                
+            }
+        } else {
+            return {
+                success: false
+            }
+        }
     };
 
     return (
