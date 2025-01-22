@@ -152,7 +152,7 @@ const NoteList = ({ refresh }) => {
         );
 
         const shareNoteId = response.data.shareNote._id;
-        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=${maxAccess}`;
+        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}`;
 
         setSharedURLs((prevURLs) => ({
             ...prevURLs,
