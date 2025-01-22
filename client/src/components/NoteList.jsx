@@ -111,6 +111,12 @@ const NoteList = ({ refresh }) => {
         return;
     }
 
+    const maxAccess = prompt("Vui lòng nhập số lần được phép truy cập ");
+    if (isNaN(maxAccess) || maxAccess <= 0) {
+      alert("số lần truy cập không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+      return;
+  }
+
     try {
         const note = notes[index];
 
@@ -137,7 +143,8 @@ const NoteList = ({ refresh }) => {
                 sharedKey, 
                 userId: selectedUser._id, 
                 userShareId: getUserIdFromLocalStorage(), 
-                expirationTime: expirationTime
+                expirationTime: expirationTime,
+                maxAccess: maxAccess
             },
              {
               headers: { Authorization: `Bearer ${token}` },
@@ -145,7 +152,7 @@ const NoteList = ({ refresh }) => {
         );
 
         const shareNoteId = response.data.shareNote._id;
-        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
+        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=${maxAccess}`;
 
         setSharedURLs((prevURLs) => ({
             ...prevURLs,
