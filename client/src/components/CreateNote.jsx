@@ -95,7 +95,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
         </div>
 
         <div className="d-flex justify-content-end">
-          <button onClick={sendEncryptedData} className="btn bg-custom-green text-white btn-lg">
+          <button onClick={sendEncryptedData} className="btn bg-custom-green bg-custom-green hover:bg-custom-green2 text-white btn-lg">
             Create
           </button>
         </div>

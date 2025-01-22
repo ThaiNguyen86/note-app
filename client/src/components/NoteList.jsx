@@ -195,7 +195,7 @@ const NoteList = ({ refresh }) => {
                   <div className="d-flex justify-content-between">
                     <button
                       onClick={() => handleDecrypt(index)}
-                      className="btn bg-custom-green text-white mt-3"
+                      className="btn bg-custom-green hover:bg-custom-green2 text-white mt-3"
                     >
                       Decrypt
                     </button>
@@ -224,7 +224,7 @@ const NoteList = ({ refresh }) => {
                   </div>
                   <button
                     onClick={() => handleShare(index)}
-                    className="btn bg-custom-green text-white mt-3"
+                    className="btn bg-custom-green hover:bg-custom-green2 text-white mt-3"
                   >
                     Share
                   </button>
