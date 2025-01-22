@@ -3,7 +3,6 @@ const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../uti
 const { sendPasswordResetEmail,generateKeyPair } = require('../helpers/auth.helper');
 const crypto = require("crypto");
 
-
 const register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
@@ -13,15 +12,37 @@ const register = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
-        const user = await User.create({ username, email, password: hashedPassword });
+
+        const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+            modulusLength: 2048,
+            publicKeyEncoding: {
+                type: 'spki',  
+                format: 'pem',
+            },
+            privateKeyEncoding: {
+                type: 'pkcs8',
+                format: 'pem',
+            },
+        });
+        const user = await User.create({
+            username,
+            email,
+            password: hashedPassword,
+            publicKey, 
+        });
 
         const token = generateJWT(user.id);
-        res.status(201).json({ message: 'User registered successfully', token });
+        res.status(201).json({
+            message: 'User registered successfully',
+            token,
+            publicKey,
+        });
     } catch (error) {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Error registering user', error: error.message });
     }
 };
+
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -105,7 +126,7 @@ const resetPassword = async (req, res) => {
             return res.status(401).json({ message: "Invalid or expired token" });
         }
 
-        const user = await User.findById(decoded.userId);
+        const user = await User.findById(decoded.userId); 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -132,32 +153,25 @@ const getUsers = async (req, res) => {
 };
 
 
-const exchangeKey = async (req, res) => {
-    const { publicKey, userId } = req.body;
-  
-    if (!publicKey || !userId) {
-      return res.status(400).json({ message: "Thiếu publicKey hoặc userId" });
-    }
-  
+const getUser = async (req, res) => {
     try {
-      let user = await User.findById(userId);
+        const { id } = req.params;
 
-      if (!user) {
-        return res.status(404).json({ message: "Người dùng không tồn tại" });
-      }
-  
-      if (!user.publicKey) {
-        const { publicKey: generatedPublicKey, privateKey } = generateKeyPair();
-        user.publicKey = generatedPublicKey;
-        await user.save();
-      }
-  
-      res.json({ publicKey: user.publicKey });
+        if (!id) {
+            return res.status(400).json({ success: false, message: "Thiếu id để tìm kiếm người dùng" });
+        }
+
+        const user = await User.findById(id, { password: 0 });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+        }
+        console.log(user)
+        res.status(200).json({ success: true, user });
     } catch (error) {
-      console.error("Lỗi khi trao đổi khóa:", error);
-      res.status(500).json({ message: "Lỗi máy chủ khi trao đổi khóa" });
+        console.error("Error fetching user by id:", error);
+        res.status(500).json({ success: false, message: "Error fetching user by id" });
     }
-  };
+};
 
-
-module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, exchangeKey };
+module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, getUser};
