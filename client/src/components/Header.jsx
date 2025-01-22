@@ -36,9 +36,7 @@ const Header = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/dashboard">Dashboard</Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/mynotes">My Notes</Link>
-                        </li>
+                        
                     </ul>
                     <div className="d-flex align-items-center">
                         <button
