@@ -1,75 +1,114 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
 const NoteShare = () => {
-  const [decryptedContent, setDecryptedContent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [expired, setExpired] = useState(false);
+    const [noteContent, setNoteContent] = useState('');
+    const [sharedBy, setSharedBy] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const decryptNoteFromURL = () => {
-      const params = new URLSearchParams(window.location.search);
-      const encryptedContent = params.get('content');
-      const sharedKey = params.get('key');
-      const expirationTime = params.get('expiresAt');
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareNoteId = urlParams.get('id');
+        const encryptedContent = urlParams.get('content');
+        const expiresAt = urlParams.get('expiresAt');
 
-      console.log('Encrypted Content:', encryptedContent);  
-      console.log('Shared Key:', sharedKey);  
-      console.log('Expiration Time:', expirationTime);  
+        const user = localStorage.getItem('user');
 
-      if (encryptedContent && sharedKey && expirationTime) {
-        const currentTime = new Date().getTime();
-        const isExpired = currentTime > parseInt(expirationTime, 10); 
-
-        if (isExpired) {
-          setExpired(true);
-          setLoading(false);
-        } else {
-          const decrypted = decryptContent(encryptedContent, sharedKey);
-          if (decrypted === "Không thể giải mã nội dung") {
-            setDecryptedContent(null);
-          } else {
-            setDecryptedContent(decrypted);
-          }
-          setLoading(false);
+        if (!shareNoteId || !encryptedContent || !expiresAt) {
+            setError('Invalid sharing information!');
+            setIsLoading(false);
+            return;
         }
-      } else {
-        alert("Dữ liệu chia sẻ không hợp lệ");
-        setLoading(false);
-      }
+
+        if (new Date().getTime() > parseInt(expiresAt)) {
+            setError('This note has expired!');
+            setIsLoading(false);
+            return;
+        }
+        const token = localStorage.getItem('token');
+        axios.get(`${import.meta.env.VITE_API_URL}/notes/share/${shareNoteId}/${user._id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`, 
+            }
+        })
+            .then((response) => {
+                const { publicKey, userShareId } = response.data.shareNote;
+                
+                if (!publicKey) {
+                    setError('Public key not found!');
+                    setIsLoading(false);
+                    return;
+                }
+
+                axios.get(`${import.meta.env.VITE_API_URL}/user/${userShareId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                    .then((userResponse) => {
+                        const user = userResponse.data.user;
+                        setSharedBy(user);
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching user details:", error);
+                        setError('Unable to retrieve user information!');
+                    });
+
+                const decryptedContent = decryptContent(encryptedContent, publicKey);
+
+                if (decryptedContent === "Unable to decrypt content") {
+                    setError('Unable to decrypt the note!');
+                } else {
+                    setNoteContent(decryptedContent);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching shared information:", error);
+                setError('Unable to retrieve shared note details!');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
+
+    const decryptContent = (content, publicKey) => {
+        try {
+            const bytes = CryptoJS.AES.decrypt(content, publicKey);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        } catch (error) {
+            console.error("Decryption error:", error);
+            return "Unable to decrypt content";
+        }
     };
 
-    decryptNoteFromURL();
-  }, []);
-
-  const decryptContent = (encryptedContent, key) => {
-    try {
-      const bytes = CryptoJS.AES.decrypt(encryptedContent, key);
-      const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-      if (!decryptedText) {
-        throw new Error('Invalid decryption result');
-      }
-      return decryptedText;
-    } catch (error) {
-      console.error("Lỗi khi giải mã:", error);
-      return "Không thể giải mã nội dung";
+    if (isLoading) {
+        return <div>Loading...</div>;
     }
-  };
 
-  return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>Ghi chú chia sẻ</h2>
-      {loading ? (
-        <p>Đang tải ghi chú...</p>
-      ) : expired ? (
-        <p>Ghi chú đã hết hạn và không thể truy cập nữa.</p>
-      ) : decryptedContent ? (
-        <p>{decryptedContent}</p>
-      ) : (
-        <p>Không thể hiển thị ghi chú này.</p>
-      )}
-    </div>
-  );
+    return (
+        <div>
+            <h1>Shared Note</h1>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            
+            {sharedBy && (
+                <div>
+                    <p><strong>Shared by:</strong> {sharedBy.username}</p>
+                    <p><strong>Email:</strong> {sharedBy.email}</p>
+                </div>
+            )}
+            
+            {noteContent ? (
+                <div>
+                    <p><strong>Note Content:</strong></p>
+                    <pre>{noteContent}</pre>
+                </div>
+            ) : (
+                <p>No content to display.</p>
+            )}
+        </div>
+    );
 };
 
 export default NoteShare;

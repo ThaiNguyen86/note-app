@@ -13,6 +13,14 @@ const NoteList = ({ refresh }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const token = localStorage.getItem("token");
 
+  const getUserIdFromLocalStorage = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user._id) {
+        return user._id;  
+    }
+    return null;  
+};
+
   useEffect(() => {
     const fetchNotesAndUsers = async () => {
 
@@ -84,64 +92,74 @@ const NoteList = ({ refresh }) => {
 
   const handleShare = async (index) => {
     if (!selectedUser) {
-      alert("Vui lòng chọn người nhận để chia sẻ ghi chú!");
-      return;
+        alert("Vui lòng chọn người nhận để chia sẻ ghi chú!");
+        return;
     }
 
     const userKey = prompt("Vui lòng nhập khóa của bạn để giải mã ghi chú:");
 
     if (!userKey) {
-      alert("Khóa không hợp lệ. Vui lòng thử lại!");
-      return;
+        alert("Khóa không hợp lệ. Vui lòng thử lại!");
+        return;
     }
 
     const time = prompt("Vui lòng nhập thời gian hết hạn (số phút):");
 
     const expirationInMinutes = parseInt(time, 10);
     if (isNaN(expirationInMinutes) || expirationInMinutes <= 0) {
-      alert("Thời gian không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
-      return;
+        alert("Thời gian không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+        return;
     }
 
     try {
-      const note = notes[index];
-      const { publicKey, privateKey } = generateKeyPair();
+        const note = notes[index];
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/exchange-key`,
-        { publicKey, userId: selectedUser._id }
-      );
-      const recipientPublicKey = response.data.publicKey;
+        const { publicKey, privateKey } = generateKeyPair();
 
-      const decryptedContent = decryptContent(note.content, userKey);
+        const recipientPublicKey = publicKey; 
 
-      if (!decryptedContent) {
-        alert("Không thể giải mã ghi chú. Vui lòng kiểm tra khóa!");
-        return;
-      }
+        const decryptedContent = decryptContent(note.content, userKey);
 
-      const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
+        if (!decryptedContent) {
+            alert("Không thể giải mã ghi chú. Vui lòng kiểm tra khóa!");
+            return;
+        }
 
-      const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-      console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
+        const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
 
-      const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000; // Convert hours to milliseconds
+        const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
+        console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
 
-      const sharedURL = `${window.location.origin}/shared-note?content=${encodeURIComponent(
-        encryptedContent
-      )}&key=${encodeURIComponent(sharedKey)}&expiresAt=${expirationTime}`;
+        const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000; 
 
-      setSharedURLs((prevURLs) => ({
-        ...prevURLs,
-        [index]: sharedURL,
-      }));
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/notes/share/create`,
+            {
+                sharedKey, 
+                userId: selectedUser._id, 
+                userShareId: getUserIdFromLocalStorage(), 
+                expirationTime: expirationTime
+            },
+             {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
 
-      alert("Ghi chú đã được chia sẻ thành công!");
+        const shareNoteId = response.data.shareNote._id;
+        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
+
+        setSharedURLs((prevURLs) => ({
+            ...prevURLs,
+            [index]: sharedURL,
+        }));
+
+       
+        alert("Ghi chú đã được chia sẻ thành công!");
     } catch (error) {
-      console.error("Lỗi khi chia sẻ ghi chú:", error);
-      alert("Không thể chia sẻ ghi chú. Vui lòng thử lại!");
+        console.error("Lỗi khi chia sẻ ghi chú:", error);
+        alert("Không thể chia sẻ ghi chú. Vui lòng thử lại!");
     }
-  };
+};
 
 
   return (
