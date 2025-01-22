@@ -53,10 +53,10 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
   return (
     <div className="container mt-5">
       <div className="card shadow p-4">
-        <h2 className="text-center mb-4 fw-bold text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 text-xl">Create Note</h2>
+        <h2 className="text-center mb-4 fw-bold text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 text-xl">Create Note</h2>
 
         <div className="mb-3">
-          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-semibold">
             Encryption Key: <span style={{ color: "red" }}>*</span>
           </label>
           <input
@@ -69,7 +69,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-semibold">
             Title: <span style={{ color: "red" }}>*</span>
           </label>
           <input
@@ -82,7 +82,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold">
+          <label className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-semibold">
             Content: <span style={{ color: "red" }}>*</span>
           </label>
           <textarea
@@ -95,7 +95,7 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
         </div>
 
         <div className="d-flex justify-content-end">
-          <button onClick={sendEncryptedData} className="btn btn-primary btn-lg">
+          <button onClick={sendEncryptedData} className="btn bg-custom-green text-white btn-lg">
             Create
           </button>
         </div>

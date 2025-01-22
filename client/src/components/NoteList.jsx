@@ -166,7 +166,7 @@ const NoteList = ({ refresh }) => {
   return (
     <div className="container">
       <ToastContainer autoClose={1500} />
-      <h2 className="text-center mb-4 text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold text-xl">Note List</h2>
+      <h2 className="text-center mb-4 text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-bold text-xl">Note List</h2>
 
       {loading ? (
         <p className="text-center text-secondary">Loading notes...</p>
@@ -195,7 +195,7 @@ const NoteList = ({ refresh }) => {
                   <div className="d-flex justify-content-between">
                     <button
                       onClick={() => handleDecrypt(index)}
-                      className="btn btn-primary mt-3"
+                      className="btn bg-custom-green text-white mt-3"
                     >
                       Decrypt
                     </button>
@@ -224,7 +224,7 @@ const NoteList = ({ refresh }) => {
                   </div>
                   <button
                     onClick={() => handleShare(index)}
-                    className="btn btn-primary mt-3"
+                    className="btn bg-custom-green text-white mt-3"
                   >
                     Share
                   </button>

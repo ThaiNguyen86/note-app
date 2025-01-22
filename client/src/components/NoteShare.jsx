@@ -155,6 +155,7 @@ const NoteShare = () => {
                     <p><strong>Access expired.</strong></p>
                 )}
             </div>
+          </div>
         </div>
       );
           

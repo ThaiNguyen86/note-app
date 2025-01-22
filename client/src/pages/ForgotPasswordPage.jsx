@@ -89,9 +89,9 @@ const ForgotPasswordPage = () => {
     };
 
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-emerald-300 to-amber-200">
+        <div className="min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-sky-300 to-amber-200">
             <div className="card shadow-lg p-4 w-100" style={{ maxWidth: '400px' }}>
-                <h2 className="text-center font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 mb-3">
+                <h2 className="text-center font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 mb-3">
                     Forgot Password
                 </h2>
 
@@ -110,7 +110,7 @@ const ForgotPasswordPage = () => {
                         <div>
                             <button
                                 type="submit"
-                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-sky-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-sky-500 to-amber-500 hover:from-sky-700 hover:to-amber-700 text-white font-semibold"}`}
                                 disabled={loading}
                             >
                                 {loading ? "Loading..." : "Send request"}
@@ -132,7 +132,7 @@ const ForgotPasswordPage = () => {
                         <div>
                             <button
                                 type="submit"
-                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-sky-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-sky-500 to-amber-500 hover:from-sky-700 hover:to-amber-700 text-white font-semibold"}`}
                                 disabled={loading}
                             >
                                 {loading ? "Loading..." : "OTP verification"}
@@ -164,7 +164,7 @@ const ForgotPasswordPage = () => {
                         <div>
                             <button
                                 type="submit"
-                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-emerald-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 text-white font-semibold"}`}
+                                className={`btn w-full py-2 ${loading ? "bg-gradient-to-r from-sky-800 to-amber-800 text-white font-semibold" : "bg-gradient-to-r from-sky-500 to-amber-500 hover:from-sky-700 hover:to-amber-700 text-white font-semibold"}`}
                                 disabled={loading}
                             >
                                 {loading ? "Loading..." : "Change Password"}

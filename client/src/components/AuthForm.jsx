@@ -49,9 +49,9 @@ const AuthForm = ({ isLogin }) => {
     };
 
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-r from-emerald-300 to-amber-200">
+        <div className="min-vh-100 d-flex align-items-center justify-content-center font-dm-sans font-medium bg-gradient-to-b from-sky-300 to-amber-100">
             <div className="card shadow-lg p-4 w-100" style={{ maxWidth: '400px' }}>
-                <h3 className="text-center font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-amber-700 mb-3">
+                <h3 className="text-center font-bold text-xl text-transparent bg-clip-text bg-gradient-to-r from-sky-700 to-amber-700 mb-3">
                     {isLogin ? "Welcome to Note App" : "Register for Note App"}
                 </h3>
                 <form onSubmit={handleSubmit}>
@@ -60,7 +60,7 @@ const AuthForm = ({ isLogin }) => {
                         <div className="mb-3">
                             <label
                                 htmlFor="username"
-                                className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold"
+                                className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700 font-bold"
                             >
                                 Username <span style={{ color: "red" }}>*</span>
                             </label>
@@ -80,7 +80,7 @@ const AuthForm = ({ isLogin }) => {
                     <div className="mb-3">
                         <label
                             htmlFor="email"
-                            className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold"
+                            className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700 font-bold"
                         >
                             Email <span style={{ color: "red" }}>*</span>
                         </label>
@@ -99,7 +99,7 @@ const AuthForm = ({ isLogin }) => {
                     <div className="mb-3">
                         <label
                             htmlFor="password"
-                            className="form-label text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700 font-bold"
+                            className="form-label text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700 font-bold"
                         >
                             Password <span style={{ color: "red" }}>*</span>
                         </label>
@@ -119,7 +119,7 @@ const AuthForm = ({ isLogin }) => {
                                 className="border border-transparent outline-none hover:bg-gray-100 shadow-sm"
                             >
                                 <i
-                                    className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"} text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700`}
+                                    className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"} text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700`}
                                 ></i>
                             </Button>
                         </InputGroup>
@@ -127,7 +127,7 @@ const AuthForm = ({ isLogin }) => {
 
                     {/* Submit Button */}
                     <button
-                        className="w-100 py-2 text-white font-semibold bg-gradient-to-r from-emerald-500 to-amber-500 hover:from-emerald-700 hover:to-amber-700 rounded-md mt-4"
+                        className="w-100 py-2 text-white font-semibold bg-gradient-to-r from-sky-500 to-amber-500 hover:from-sky-700 hover:to-amber-700 rounded-md mt-4"
                         type="submit"
                     >
                         {isLogin ? "LOG IN" : "REGISTER"}
@@ -140,7 +140,7 @@ const AuthForm = ({ isLogin }) => {
                         <button
                             type="button"
                             onClick={handleForgotPassword}
-                            className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700"
+                            className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700"
                         >
                             Forgot password?
                         </button>
@@ -151,14 +151,14 @@ const AuthForm = ({ isLogin }) => {
                     {isLogin ? (
                         <span>
                             New to Note App?{' '}
-                            <a href="/register" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700">
+                            <a href="/register" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700">
                                 Register here
                             </a>
                         </span>
                     ) : (
                         <span>
                             Already have an account?{' '}
-                            <a href="/login" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-emerald-700 to-amber-700">
+                            <a href="/login" className="hover:font-semibold font-medium text-decoration-none text-transparent bg-clip-text bg-gradient-to-b from-sky-700 to-amber-700">
                                 Log in here
                             </a>
                         </span>
@@ -167,7 +167,7 @@ const AuthForm = ({ isLogin }) => {
 
                 {/* Footer */}
                 <div className="text-center text-muted small mt-3">
-                    © 2025 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-amber-700">Note App</strong>. All Rights Reserved.
+                    © 2025 <strong className="text-transparent bg-clip-text bg-gradient-to-r from-sky-700 to-amber-700">Note App</strong>. All Rights Reserved.
                 </div>
             </div>
         </div>

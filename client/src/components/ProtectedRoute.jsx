@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
     
     useEffect(() => {
         if (!token && !window.hasShownAuthToast) {
-            toast.error("You need to login to access this page");
+            toast.info("You need to login to access this page");
             window.hasShownAuthToast = true; // Đánh dấu rằng thông báo đã hiển thị
         }
     }, [token]);
