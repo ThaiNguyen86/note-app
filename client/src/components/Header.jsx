@@ -38,19 +38,27 @@ const Header = () => {
                         </li>
                     </ul>
                     <div className="d-flex align-items-center">
-                        <button
-                            className="btn btn-outline-light me-3"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </button>
-                        <img
-                            src={avatar}
-                            alt="Avatar"
-                            className="rounded-circle me-2"
-                            style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                        />
-                        <span className="text-white">{user?.email}</span> {/* Hiển thị email người dùng */}
+                        {user ? ( // Kiểm tra xem user đã đăng nhập hay chưa
+                            <>
+                                <button
+                                    className="btn btn-outline-light me-3"
+                                    onClick={handleLogout}
+                                >
+                                    Logout
+                                </button>
+                                <img
+                                    src={avatar}
+                                    alt="Avatar"
+                                    className="rounded-circle me-2"
+                                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                                />
+                                <span className="text-white">{user.username}</span> {/* Hiển thị email người dùng */}
+                            </>
+                        ) : (
+                            <Link to="/register" className="btn btn-outline-light me-3">
+                                Register
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
