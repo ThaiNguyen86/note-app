@@ -1,6 +1,6 @@
 const User = require('../models/user.model');
 const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../utils/auth.util');
-const { sendPasswordResetEmail,generateKeyPair } = require('../helpers/auth.helper');
+const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 const crypto = require("crypto");
 
 const register = async (req, res) => {
@@ -166,7 +166,6 @@ const getUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
         }
-        console.log(user)
         res.status(200).json({ success: true, user });
     } catch (error) {
         console.error("Error fetching user by id:", error);
