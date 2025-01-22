@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import axios from "axios";
+<<<<<<< HEAD
+=======
+import 'bootstrap/dist/css/bootstrap.min.css';
+>>>>>>> origin/thuandoan
 import { generateKeyPair, computeSharedKey } from "../utils/encryption.jsx";
 
 const NoteList = ({ refresh }) => {
@@ -145,6 +149,7 @@ const NoteList = ({ refresh }) => {
 
 
   return (
+<<<<<<< HEAD
     <div >
       <h2>Danh sách ghi chú</h2>
 
@@ -212,6 +217,87 @@ const NoteList = ({ refresh }) => {
             </li>
           ))}
         </ul>
+=======
+    <div className="container">
+      <h2 className="text-center mb-4 fw-bold">Danh sách ghi chú</h2>
+
+      {loading ? (
+        <p className="text-center text-secondary">Đang tải ghi chú...</p>
+      ) : notes.length === 0 ? (
+        <p className="text-center text-muted">Không có ghi chú nào.</p>
+      ) : (
+        <div className="row">
+          {notes.map((note, index) => (
+            <div
+              key={index}
+              className="col-md-6 col-lg-4 mb-4"
+            >
+              <div className="card shadow border-primary">
+                <div className="card-body">
+                  <h3 className="card-title text-dark">Tiêu đề: {note.title}</h3>
+                  <div className="mb-3">
+                    <label className="form-label">Khóa giải mã:</label>
+                    <input
+                      type="text"
+                      value={decryptionKeys[index] || ""}
+                      onChange={(e) => handleKeyChange(index, e.target.value)}
+                      placeholder="Nhập khóa giải mã"
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <button
+                      onClick={() => handleDecrypt(index)}
+                      className="btn btn-primary mt-3"
+                    >
+                      Giải mã
+                    </button>
+                    <button
+                      onClick={() => deleteNote(note._id)}
+                      className="btn btn-danger mt-3"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                  <div className="mt-3">
+                    <label className="form-label">Chọn người nhận:</label>
+                    <select
+                      onChange={(e) =>
+                        setSelectedUser(users.find((user) => user._id === e.target.value))
+                      }
+                      className="form-select"
+                    >
+                      <option value="">--Chọn người nhận--</option>
+                      {users.map((user) => (
+                        <option key={user._id} value={user._id}>
+                          {user.username} ({user.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    onClick={() => handleShare(index)}
+                    className="btn btn-primary mt-3"
+                  >
+                    Chia sẻ
+                  </button>
+                  {sharedURLs[index] && (
+                    <p className="mt-2">
+                      URL chia sẻ:{" "}
+                      <a href={sharedURLs[index]} target="_blank" rel="noopener noreferrer">
+                        {sharedURLs[index]}
+                      </a>
+                    </p>
+                  )}
+                  <p className="mt-3 text-secondary">
+                    {decryptedNotes[index] || "Nội dung đã được mã hóa"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+>>>>>>> origin/thuandoan
       )}
     </div>
   );

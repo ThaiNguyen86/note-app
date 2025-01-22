@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CryptoJS from 'crypto-js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const NoteShare = () => {
   const [decryptedContent, setDecryptedContent] = useState(null);
@@ -57,19 +58,25 @@ const NoteShare = () => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
-      <h2>Ghi chú chia sẻ</h2>
-      {loading ? (
-        <p>Đang tải ghi chú...</p>
-      ) : expired ? (
-        <p>Ghi chú đã hết hạn và không thể truy cập nữa.</p>
-      ) : decryptedContent ? (
-        <p>{decryptedContent}</p>
-      ) : (
-        <p>Không thể hiển thị ghi chú này.</p>
-      )}
+    <div className="container mt-5">
+      <div className="card shadow p-4" style={{ maxWidth: "800px", margin: "auto" }}>
+        <h2 className="text-center mb-4 fw-bold">Ghi chú chia sẻ</h2>
+        {loading ? (
+          <p className="text-center text-secondary">Đang tải ghi chú...</p>
+        ) : expired ? (
+          <p className="text-center text-danger">Ghi chú đã hết hạn và không thể truy cập nữa.</p>
+        ) : decryptedContent ? (
+          <>
+            <h4 className="text-start fw-bold">Nội dung giải mã:</h4>
+            <p className="text-start">{decryptedContent}</p>
+          </>
+        ) : (
+          <p className="text-center text-muted">Không thể hiển thị ghi chú này.</p>
+        )}
+      </div>
     </div>
   );
+  
 };
 
 export default NoteShare;

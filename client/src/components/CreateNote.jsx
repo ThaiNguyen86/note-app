@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
 
@@ -49,44 +50,49 @@ const ClientSideEncryption = ({ onNoteCreated }) => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
-      <h2>Client-side Encryption</h2>
+    <div className="container mt-5">
+      <div className="card shadow p-4">
+        <h2 className="text-center mb-4 fw-bold">Client-side Encryption</h2>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label>Khóa mã hóa:</label>
-        <input
-          type="text"
-          value={encryptionKey}
-          onChange={(e) => setEncryptionKey(e.target.value)}
-          placeholder="Nhập khóa mã hóa"
-          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-        />
+        <div className="mb-3">
+          <label className="form-label">Khóa mã hóa:</label>
+          <input
+            type="text"
+            value={encryptionKey}
+            onChange={(e) => setEncryptionKey(e.target.value)}
+            placeholder="Nhập khóa mã hóa"
+            className="form-control"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Tiêu đề:</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Nhập tiêu đề"
+            className="form-control"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Nội dung:</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Nhập nội dung"
+            className="form-control"
+            rows="5"
+          ></textarea>
+        </div>
+
+        <div className="d-flex justify-content-end">
+          <button onClick={sendEncryptedData} className="btn btn-primary btn-lg">
+            Tạo
+          </button>
+        </div>
       </div>
-
-      <div style={{ marginBottom: '15px' }}>
-        <label>Tiêu đề:</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Nhập tiêu đề"
-          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '15px' }}>
-        <label>Nội dung:</label>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Nhập nội dung"
-          style={{ width: '100%', padding: '8px', marginTop: '5px', height: '100px' }}
-        />
-      </div>
-
-      <button onClick={sendEncryptedData} style={{ padding: '10px 15px' }}>
-        Tạo
-      </button>
     </div>
   );
 };
