@@ -37,6 +37,7 @@ const getShareNote = async (req, res) => {
 
         const currentTime = new Date();
         if (currentTime > new Date(shareNote.expirationTime)) {
+            await ShareNote.findByIdAndDelete(id);
             return res.status(410).json({ message: "Liên kết chia sẻ đã hết hạn" });
         }
 
