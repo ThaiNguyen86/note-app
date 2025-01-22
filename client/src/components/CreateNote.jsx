@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
 
-const ClientSideEncryption = () => {
+const ClientSideEncryption = ({ onNoteCreated }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [encryptionKey, setEncryptionKey] = useState('');
@@ -35,10 +35,13 @@ const ClientSideEncryption = () => {
       );
 
       console.log(response.data.message || 'Dữ liệu đã được gửi thành công!');
-      alert('Create note success');
+      alert('Tạo ghi chú thành công!');
       setTitle(''); 
       setContent(''); 
       setEncryptionKey('');
+      if (onNoteCreated) {
+        onNoteCreated();
+      }
     } catch (error) {
       console.error('Lỗi khi gửi dữ liệu:', error);
       alert('Có lỗi xảy ra. Vui lòng thử lại!');
