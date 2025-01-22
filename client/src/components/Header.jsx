@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
     const navigate = useNavigate();
-    const avatarUrl = "https://via.placeholder.com/40"; // Đường dẫn ảnh đại diện (thay bằng ảnh người dùng thực tế)
+    const { currentUser, logout } = useAuth(); // Lấy thông tin người dùng và hàm logout từ AuthContext
+    const avatarUrl = "https://via.placeholder.com/40"; // Thay đường dẫn này bằng ảnh thực tế nếu có
 
     const handleLogout = () => {
-        localStorage.removeItem('authToken'); // Xóa token hoặc thông tin xác thực
-        navigate('/login'); // Điều hướng người dùng trở lại trang đăng nhập
+        logout(); // Gọi hàm logout từ AuthContext
+        navigate('/login');
     };
 
     return (
@@ -39,18 +41,19 @@ const Header = () => {
                         </li>
                     </ul>
                     <div className="d-flex align-items-center">
+                        <button
+                            className="btn btn-outline-light me-3"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
                         <img
                             src={avatarUrl}
                             alt="Avatar"
                             className="rounded-circle me-2"
                             style={{ width: "40px", height: "40px", objectFit: "cover" }}
                         />
-                        <button
-                            className="btn btn-outline-light"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </button>
+                        <span className="text-white">{currentUser?.username || "User"}</span>
                     </div>
                 </div>
             </div>
