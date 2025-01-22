@@ -38,7 +38,6 @@ const NoteShare = () => {
                 const { publicKey, userShareId } = response.data.shareNote;
                 
                 if (!publicKey) {
-                    setError('Public key not found!');
                     setIsLoading(false);
                     return;
                 }
