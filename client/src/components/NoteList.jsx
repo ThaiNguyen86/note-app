@@ -114,12 +114,18 @@ const NoteList = ({ refresh }) => {
       return;
     }
 
+    const maxAccess = prompt("Vui lòng nhập số lần được phép truy cập ");
+    if (isNaN(maxAccess) || maxAccess <= 0) {
+      alert("số lần truy cập không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+      return;
+  }
+
     try {
       const note = notes[index];
 
       const { publicKey, privateKey } = generateKeyPair();
 
-      const recipientPublicKey = publicKey;
+        const recipientPublicKey = publicKey; 
 
       const decryptedContent = decryptContent(note.content, userKey);
 
@@ -130,26 +136,26 @@ const NoteList = ({ refresh }) => {
 
       const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
 
-      const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-      console.log("Note after decryption and re-encryption:", encryptedContent);
+        const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
+        console.log("Ghi chú sau khi giải mã và mã hóa lại:", encryptedContent);
 
       const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000;
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/notes/share/create`,
-        {
-          sharedKey,
-          userId: selectedUser._id,
-          userShareId: getUserIdFromLocalStorage(),
-          expirationTime: expirationTime
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/notes/share/create`,
+            {
+                sharedKey, 
+                userId: selectedUser._id, 
+                userShareId: getUserIdFromLocalStorage(), 
+                expirationTime: expirationTime
+            },
+             {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+        );
 
-      const shareNoteId = response.data.shareNote._id;
-      const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
+        const shareNoteId = response.data.shareNote._id;
+        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
 
       setSharedURLs((prevURLs) => ({
         ...prevURLs,

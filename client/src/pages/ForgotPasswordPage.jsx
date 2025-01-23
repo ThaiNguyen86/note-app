@@ -35,11 +35,12 @@ const ForgotPasswordPage = () => {
     };
 
     const handleSubmitOtp = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
 
         setLoading(true);
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/verify-otp`, { email, otp });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/verify-otp`, { email, otp });
+            console.log(email + otp)
             if (response.data.success) {
                 setOtpVerified(true);
                 setMessage("Verified OTP. Please enter new password.");
