@@ -8,38 +8,48 @@ const NoteShare = () => {
     const [sharedBy, setSharedBy] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [remainingAccess, setRemainingAccess] = useState(null);  // Lưu số lần truy cập còn lại
+    const [timeRemaining, setTimeRemaining] = useState(null); // Lưu thời gian còn lại
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const shareNoteId = urlParams.get('id');
         const encryptedContent = urlParams.get('content');
-        const expiresAt = urlParams.get('expiresAt');
 
         const user = localStorage.getItem('user');
 
-        if (!shareNoteId || !encryptedContent || !expiresAt) {
+        if (!shareNoteId || !encryptedContent) {
             setError('Invalid sharing information!');
             setIsLoading(false);
             return;
         }
 
-        if (new Date().getTime() > parseInt(expiresAt)) {
-            setError('This note has expired!');
-            setIsLoading(false);
-            return;
-        }
         const token = localStorage.getItem('token');
         axios.get(`${import.meta.env.VITE_API_URL}/notes/share/${shareNoteId}/${user._id}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`, 
+                Authorization: `Bearer ${token}`, 
             }
         })
             .then((response) => {
-                const { publicKey, userShareId } = response.data.shareNote;
+                const { publicKey, userShareId, expirationTime, currentAccessCount, maxAccess } = response.data.shareNote;
                 
                 if (!publicKey) {
                     setIsLoading(false);
                     return;
+                }
+
+                // Tính số lần truy cập còn lại
+                const remaining = maxAccess - currentAccessCount;
+                setRemainingAccess(remaining);
+
+                // Tính thời gian còn lại
+                const expirationDate = new Date(expirationTime);
+                const currentDate = new Date();
+                const timeLeft = expirationDate - currentDate;
+                if (timeLeft > 0) {
+                    setTimeRemaining(timeLeft);
+                } else {
+                    setTimeRemaining(0);
                 }
 
                 axios.get(`${import.meta.env.VITE_API_URL}/user/${userShareId}`, {
@@ -83,6 +93,14 @@ const NoteShare = () => {
         }
     };
 
+    // Hàm để hiển thị thời gian còn lại dưới dạng giờ, phút, giây
+    const formatTimeRemaining = (time) => {
+        const hours = Math.floor(time / (1000 * 60 * 60));
+        const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((time % (1000 * 60)) / 1000);
+        return `${hours}h ${minutes}m ${seconds}s`;
+    };
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -124,6 +142,19 @@ const NoteShare = () => {
             ) : (
               <p className="text-center text-muted">No content to display.</p>
             )}
+
+            {/* Hiển thị số lần truy cập còn lại và thời gian truy cập còn lại */}
+            <div>
+                {remainingAccess !== null && (
+                    <p><strong>Remaining Access:</strong> {remainingAccess} times</p>
+                )}
+
+                {timeRemaining !== null && timeRemaining > 0 ? (
+                    <p><strong>Time Remaining:</strong> {formatTimeRemaining(timeRemaining)}</p>
+                ) : (
+                    <p><strong>Access expired.</strong></p>
+                )}
+            </div>
           </div>
         </div>
       );

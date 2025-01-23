@@ -2,13 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
+
     const styles = {
         homePage: {
-            background: "url('https://source.unsplash.com/1600x900/?notes,technology') no-repeat center center/cover",
+            background: "linear-gradient(to bottom,rgba(9, 151, 222, 0.62),rgba(255, 178, 45, 0.61)), url('https://source.unsplash.com/1600x900/?notes,technology') no-repeat center center/cover",
             height: "100vh",
             display: "flex",
             justifyContent: "center",
-            alignItems: "flex-start", // Đẩy nội dung lên trên
+            alignItems: "flex-start", // Push content to the top
             position: "relative",
             color: "#fff",
             fontFamily: "'Arial', sans-serif",
@@ -19,12 +20,12 @@ const HomePage = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "rgba(0, 0, 0, 0.6)",
+            background: "rgba(0, 0, 0, 0.24)",
         },
         homeContent: {
             textAlign: "center",
             zIndex: 2,
-            paddingTop: "20vh", // Đẩy nội dung xuống bắt đầu ở 2/3 trang
+            paddingTop: "20vh", // Push content down to start at 2/3 of the page
         },
         homeTitle: {
             fontSize: "3rem",
@@ -35,8 +36,9 @@ const HomePage = () => {
         homeDescription: {
             fontSize: "1.5rem",
             marginBottom: "30px",
+            fontWeight: "bold",
             lineHeight: 1.5,
-            color: "#ddd",
+            color: "white",
         },
         buttonContainer: {
             marginTop: "20px",
@@ -51,24 +53,37 @@ const HomePage = () => {
             transition: "background-color 0.3s ease, color 0.3s ease",
         },
         btnPrimary: {
-            backgroundColor: "#007bff",
-            color: "#fff",
+            backgroundColor: "rgb(36, 108, 179)",
+            color: "white",
         },
-    };
+        btnPrimaryHover: {
+            backgroundColor: "rgb(27, 81, 135)",
+            color: "white",
+        },
 
+
+    };
+    const [btnStyle, setBtnStyle] = React.useState(styles.btnPrimary);
     return (
         <div style={styles.homePage}>
             <div style={styles.overlay}></div>
             <div style={styles.homeContent}>
-                <h1 style={styles.homeTitle}>Chào mừng đến với ứng dụng chia sẻ ghi chú bảo mật</h1>
+                <h1 style={styles.homeTitle}>Welcome to the secure note sharing app</h1>
                 <p style={styles.homeDescription}>
-                    Lưu trữ, chia sẻ và quản lý ghi chú của bạn một cách dễ dàng và an toàn.
+                    Store, share, and manage your notes easily and securely.
                 </p>
                 <div style={styles.buttonContainer}>
-                    <Link to="/dashboard" style={{ ...styles.btn, ...styles.btnPrimary }}>
-                        Bắt đầu ngay
-                    </Link>
+                    <button
+                        style={{ ...styles.btn, ...btnStyle }}
+                        onMouseEnter={() => setBtnStyle(styles.btnPrimaryHover)}
+                        onMouseLeave={() => setBtnStyle(styles.btnPrimary)}
+                    >
+                        <Link to="/dashboard">
+                            Get Started
+                        </Link>
+                    </button>
                 </div>
+
             </div>
         </div>
     );
