@@ -8,9 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'custom-pink-1': '#EEC6CC', 
-        'custom-pink-2': '#e05170',
-        'custom-gray': 'rgb(204, 206, 199)', 
+        'custom-green': 'rgb(36, 108, 179)', 
+        'custom-green2': 'rgb(27, 81, 135)', 
+        'custom-gray': 'rgb(198, 199, 193)', 
+        'custom-yellow': 'rgb(255, 219, 16)',
       },
       fontFamily: {
         'dm-sans': ['DM Sans', 'sans-serif'],

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const NoteShare = () => {
     const [noteContent, setNoteContent] = useState('');
     const [sharedBy, setSharedBy] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [remainingAccess, setRemainingAccess] = useState(null);  // Lưu số lần truy cập còn lại
-    const [timeRemaining, setTimeRemaining] = useState(null); // Lưu thời gian còn lại
+    const [remainingAccess, setRemainingAccess] = useState(null); 
+    const [timeRemaining, setTimeRemaining] = useState(null);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -105,24 +106,41 @@ const NoteShare = () => {
     }
 
     return (
-        <div>
-            <h1>Shared Note</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            
-            {sharedBy && (
-                <div>
-                    <p><strong>Shared by:</strong> {sharedBy.username}</p>
-                    <p><strong>Email:</strong> {sharedBy.email}</p>
-                </div>
+        <div className="container mt-5">
+          <div className="card shadow p-4" style={{ maxWidth: "800px", margin: "auto" }}>
+            <h1 className="text-center mb-4 fw-bold">Shared Note</h1>
+      
+            {error && (
+              <p className="text-center text-danger fw-bold">{error}</p>
             )}
-            
+      
+            {sharedBy && (
+              <div className="mb-4">
+                <p className="mb-1">
+                  <strong>Shared by:</strong> {sharedBy.username}
+                </p>
+                <p className="mb-0">
+                  <strong>Email:</strong> {sharedBy.email}
+                </p>
+              </div>
+            )}
+      
             {noteContent ? (
-                <div>
-                    <p><strong>Note Content:</strong></p>
-                    <pre>{noteContent}</pre>
+              <div className="mt-3">
+                <p className="fw-bold">Note Content:</p>
+                <div 
+                  className="bg-light p-3 rounded border" 
+                  style={{
+                    wordBreak: "break-word", // Tự động xuống dòng khi gặp từ quá dài
+                    whiteSpace: "pre-wrap", // Hiển thị định dạng xuống dòng từ nội dung
+                    overflowWrap: "break-word", // Hỗ trợ thêm cho trình duyệt cũ
+                  }}
+                >
+                  {noteContent}
                 </div>
+              </div>
             ) : (
-                <p>No content to display.</p>
+              <p className="text-center text-muted">No content to display.</p>
             )}
 
             {/* Hiển thị số lần truy cập còn lại và thời gian truy cập còn lại */}
@@ -137,8 +155,11 @@ const NoteShare = () => {
                     <p><strong>Access expired.</strong></p>
                 )}
             </div>
+          </div>
         </div>
-    );
+      );
+          
 };
+
 
 export default NoteShare;
