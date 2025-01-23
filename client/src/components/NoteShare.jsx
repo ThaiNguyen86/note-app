@@ -31,8 +31,9 @@ const NoteShare = () => {
             }
         })
             .then((response) => {
+              console.log(response);
                 const { publicKey, userShareId, expirationTime, currentAccessCount, maxAccess } = response.data.shareNote;
-                
+                console.log(response.data.shareNote);
                 if (!publicKey) {
                     setIsLoading(false);
                     return;

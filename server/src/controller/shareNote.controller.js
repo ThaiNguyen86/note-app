@@ -3,7 +3,7 @@
     const createShareNote = async (req, res) => {
         try {
             const {userId ,userShareId, sharedKey, expirationTime, maxAccess} = req.body;
-            if (!userId || !userShareId || !sharedKey || !expirationTime) {
+            if (!userId || !userShareId || !sharedKey || !expirationTime || !maxAccess) {
                 return res.status(400).json({ message: "Thiếu thông tin cần thiết để chia sẻ ghi chú" });
             }
             const shareNote = new ShareNote({

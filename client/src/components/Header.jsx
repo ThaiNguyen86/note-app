@@ -26,7 +26,7 @@ const Header = () => {
                 <div className="flex items-center space-x-8">
                     <Link className="text-white hover:!text-custom-yellow font-bold text-xl transition-colors duration-300" to="/">NoteApp</Link>
                     <Link className="text-white hover:!text-custom-yellow font-semibold transition-colors duration-300 hover:font-bold" to="/">Home</Link>
-                    <Link className="text-white hover:!text-custom-yellow font-semibold transition-colors duration-300 hover:font-bold" to="/dashboard">Add Note</Link>
+                    <Link className="text-white hover:!text-custom-yellow font-semibold transition-colors duration-300 hover:font-bold" to="/dashboard">My Notes</Link>
                 </div>
                 <div className="flex items-center">
                     <div className="flex items-center">
