@@ -1,4 +1,4 @@
-# ĐỒ ÁN NHẬP MÔN MÃ HÓA MẬT MÀ- ĐỀ TÀI: ỨNG DỤNG CHIA SẺ GHI CHÚ
+# ĐỒ ÁN NHẬP MÔN MÃ HÓA MẬT MÃ- ĐỀ TÀI: ỨNG DỤNG CHIA SẺ GHI CHÚ
 
 ### LỜI GIỚI THIỆU
 Đây là đồ án 2 môn Nhập môn Mã hóa Mật mã lớp CQ2022/22, được thực hiện bởi nhóm 4 và dưới sự hướng dẫn của Thầy Đặng Trần Minh Hậu.
