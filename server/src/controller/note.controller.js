@@ -1,6 +1,5 @@
 const Note = require('../models/note.model');
 
-
 let notes = [];
 
 const createNote = async (req, res) => {
@@ -47,9 +46,8 @@ const getNote = (req, res) => {
     res.json({ message: 'Note accessed successfully', noteContent: note.content });
 };
 
-
 const getNotes = async (req, res) => {
-    const notes = await Note.find({ userId: req.userId});
+    const notes = await Note.find({ userId: req.userId });
     res.json(notes);
 };
 
@@ -61,22 +59,21 @@ const deleteNote = async (req, res) => {
         if (!deletedNote) {
             return res.status(404).json({
                 success: false,
-                message: 'Không tìm thấy ghi chú',
+                message: 'Note not found',
             });
         }
         return res.status(200).json({
             success: true,
-            message: 'Xoá ghi chú thành công',
+            message: 'Note deleted successfully',
             deletedNote,
         });
     } catch (error) {
-        console.error('Có lỗi khi đang xoá ghi chú:', error);
+        console.error('Error deleting note:', error);
         return res.status(500).json({
             success: false,
-            message: 'Lỗi máy chủ khi xoá ghi chú',
+            message: 'Internal server error while deleting note',
         });
     }
 };
-
 
 module.exports = { createNote, getNote, getNotes, deleteNote };

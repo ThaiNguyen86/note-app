@@ -1,7 +1,8 @@
 const User = require('../models/user.model');
-const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../utils/auth.util');
-const { sendPasswordResetEmail,generateKeyPair } = require('../helpers/auth.helper');
+const { hashPassword, comparePassword, generateJWT, verifyJWT } = require('../utils/auth.util');
+const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 const crypto = require("crypto");
+const ShareNote = require("../models/share.model")
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -13,36 +14,22 @@ const register = async (req, res) => {
 
         const hashedPassword = await hashPassword(password);
 
-        const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: {
-                type: 'spki',  
-                format: 'pem',
-            },
-            privateKeyEncoding: {
-                type: 'pkcs8',
-                format: 'pem',
-            },
-        });
         const user = await User.create({
             username,
             email,
             password: hashedPassword,
-            publicKey, 
         });
 
         const token = generateJWT(user.id);
         res.status(201).json({
             message: 'User registered successfully',
             token,
-            publicKey,
         });
     } catch (error) {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Error registering user', error: error.message });
     }
 };
-
 
 const login = async (req, res) => {
     const { email, password } = req.body;
@@ -69,7 +56,6 @@ const login = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 };
-
 
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
@@ -101,7 +87,7 @@ const verifyOtp = async (req, res) => {
 
         const authToken = generateJWT(user.id);
         res.setHeader('Authorization', `Bearer ${authToken}`);
-        res.status(200).json({ success: true,message: 'OTP verified successfully', authToken });
+        res.status(200).json({ success: true, message: 'OTP verified successfully', authToken });
     } catch (error) {
         console.error('Error verifying OTP:', error);
         res.status(500).json({ message: 'Error verifying OTP', error: error.message });
@@ -152,21 +138,19 @@ const getUsers = async (req, res) => {
     }
 };
 
-
 const getUser = async (req, res) => {
     try {
         const { id } = req.params;
 
         if (!id) {
-            return res.status(400).json({ success: false, message: "Thiếu id để tìm kiếm người dùng" });
+            return res.status(400).json({ success: false, message: "Missing id to search for user" });
         }
 
         const user = await User.findById(id, { password: 0 });
 
         if (!user) {
-            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng" });
+            return res.status(404).json({ success: false, message: "User not found" });
         }
-        console.log(user)
         res.status(200).json({ success: true, user });
     } catch (error) {
         console.error("Error fetching user by id:", error);
@@ -174,4 +158,55 @@ const getUser = async (req, res) => {
     }
 };
 
-module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, getUser};
+const keyExchange = async (req, res) => {
+    try {
+        const { userReceiveId, userSendId } = req.body;
+        
+        const userReceive = await User.findById(userReceiveId);
+        const userSend = await User.findById(userSendId);
+
+        if (!userReceive) {
+            return res.status(404).json({ message: "User receive not found" });
+        }
+        if (!userSend) {
+            return res.status(404).json({ message: "User send not found" });
+        }
+
+        // Create Diffie-Hellman for Sender
+        const dhSender = crypto.createDiffieHellman(1024);
+        const publicKeySender = dhSender.generateKeys();
+
+        // Create Diffie-Hellman for Receiver
+        const dhReceiver = crypto.createDiffieHellman(dhSender.getPrime(), dhSender.getGenerator());
+        const publicKeyReceiver = dhReceiver.generateKeys();
+
+        // Compute shared key from both sides
+        const sharedKeySender = dhSender.computeSecret(publicKeyReceiver);
+        const sharedKeyReceiver = dhReceiver.computeSecret(publicKeySender);
+
+        userSend.publicKey = publicKeySender.toString('base64');
+        await userSend.save();
+
+        userReceive.publicKey = publicKeyReceiver.toString('base64');
+        await userReceive.save();
+
+        const shareNote = new ShareNote({
+            userId: userReceiveId,
+            userShareId: userSendId,
+            sessionKey: sharedKeySender.toString('base64'),
+        });
+        await shareNote.save();
+
+        res.status(200).json({
+            message: 'Key exchange completed successfully',
+            sharedKey: sharedKeySender.toString('base64'),
+            shareNoteId: shareNote._id,
+        });
+
+    } catch (error) {
+        console.error('Error during key exchange', error);
+        res.status(500).json({ message: 'Error during key exchange', error: error.message });
+    }
+};
+
+module.exports = { register, login, forgotPassword, verifyOtp, resetPassword, getUsers, getUser, keyExchange };

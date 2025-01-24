@@ -1,10 +1,10 @@
-const ShareNote = require("../models/share.model")
+const ShareNote = require("../models/share.model");
 
 const createShareNote = async (req, res) => {
     try {
-        const {userId ,userShareId, sharedKey, expirationTime} = req.body;
+        const { userId, userShareId, sharedKey, expirationTime } = req.body;
         if (!userId || !userShareId || !sharedKey || !expirationTime) {
-            return res.status(400).json({ message: "Thiếu thông tin cần thiết để chia sẻ ghi chú" });
+            return res.status(400).json({ message: "Missing required information to share note" });
         }
         const shareNote = new ShareNote({
             userId,
@@ -13,11 +13,11 @@ const createShareNote = async (req, res) => {
             expirationTime
         });
         await shareNote.save();
-        res.status(201).json({ message: "Chia sẻ ghi chú thành công", shareNote });
+        res.status(201).json({ message: "Note shared successfully", shareNote });
 
     } catch (error) {
-        console.error("Lỗi khi tạo ShareNote:", error);
-        res.status(500).json({ message: "Lỗi khi tạo ShareNote" });
+        console.error("Error creating ShareNote:", error);
+        res.status(500).json({ message: "Error creating ShareNote" });
     }
 };
 
@@ -26,29 +26,29 @@ const getShareNote = async (req, res) => {
         const { id } = req.params;  
         const userId = req.userId;
         if (!id || !userId) {
-            return res.status(400).json({ message: "Thiếu id hoặc userId để truy cập ghi chú" });
+            return res.status(400).json({ message: "Missing id or userId to access note" });
         }
 
         const shareNote = await ShareNote.findById(id);
 
         if (!shareNote) {
-            return res.status(404).json({ message: "Không tìm thấy ghi chú được chia sẻ" });
+            return res.status(404).json({ message: "Shared note not found" });
         }
 
         const currentTime = new Date();
         if (currentTime > new Date(shareNote.expirationTime)) {
-            return res.status(410).json({ message: "Liên kết chia sẻ đã hết hạn" });
+            return res.status(410).json({ message: "Share link has expired" });
         }
 
-        if ( shareNote.userId.toString() == userId || shareNote.userShareId.toString() == userId ) {
-            res.status(200).json({ message: "Lấy ghi chú thành công", shareNote });
-        }else{
-            return res.status(403).json({ message: "Bạn không có quyền truy cập ghi chú này" });
+        if (shareNote.userId.toString() == userId || shareNote.userShareId.toString() == userId) {
+            res.status(200).json({ message: "Note retrieved successfully", shareNote });
+        } else {
+            return res.status(403).json({ message: "You do not have permission to access this note" });
         }
     } catch (error) {
-        console.error("Lỗi khi lấy ShareNote:", error);
-        res.status(500).json({ message: "Lỗi khi lấy ShareNote" });
+        console.error("Error retrieving ShareNote:", error);
+        res.status(500).json({ message: "Error retrieving ShareNote" });
     }
 };
 
-module.exports = { createShareNote ,getShareNote};
+module.exports = { createShareNote, getShareNote };
