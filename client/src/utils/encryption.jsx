@@ -6,14 +6,15 @@ export const generateKeyPair = () => {
   const publicKey = CryptoJS.HmacSHA256(privateKey, 'shared-secret').toString(CryptoJS.enc.Base64);
 
   return {
-    privateKey,
-    publicKey,
+    publicKeySender: publicKey, 
+    privateKeySender: privateKey,
+    publicKeyReceive: publicKey, 
+    privateKeyReceive: privateKey
   };
 };
 
-export const computeSharedKey = (privateKey, recipientPublicKey) => {
-  const sharedKey = CryptoJS.HmacSHA256(privateKey + recipientPublicKey, 'shared-secret').toString(CryptoJS.enc.Base64);
-
+export const computeSharedKey = (privateKey, publicKey) => {
+  const sharedKey = CryptoJS.HmacSHA256(privateKey + publicKey, 'shared-secret').toString(CryptoJS.enc.Base64);
   return sharedKey;
 };
 

@@ -31,9 +31,8 @@ const NoteShare = () => {
             }
         })
             .then((response) => {
-                const { publicKey, userShareId, expirationTime, currentAccessCount, maxAccess } = response.data.shareNote;
-                
-                if (!publicKey) {
+                const { sessionKey, userShareId, expirationTime, currentAccessCount, maxAccess } = response.data.shareNote;
+                if (!sessionKey) {
                     setIsLoading(false);
                     return;
                 }
@@ -65,9 +64,7 @@ const NoteShare = () => {
                         console.error("Error fetching user details:", error);
                         setError('Unable to retrieve user information!');
                     });
-
-                const decryptedContent = decryptContent(encryptedContent, publicKey);
-
+                const decryptedContent = decryptContent(encryptedContent, sessionKey);
                 if (decryptedContent === "Unable to decrypt content") {
                     setError('Unable to decrypt the note!');
                 } else {
@@ -83,9 +80,9 @@ const NoteShare = () => {
             });
     }, []);
 
-    const decryptContent = (content, publicKey) => {
+    const decryptContent = (content, sessionKey) => {
         try {
-            const bytes = CryptoJS.AES.decrypt(content, publicKey);
+            const bytes = CryptoJS.AES.decrypt(content, sessionKey);
             return bytes.toString(CryptoJS.enc.Utf8);
         } catch (error) {
             console.error("Decryption error:", error);

@@ -22,6 +22,7 @@ const NoteList = ({ refresh }) => {
     return null;
   };
 
+
   useEffect(() => {
     const fetchNotesAndUsers = async () => {
       setLoading(true);
@@ -98,79 +99,81 @@ const NoteList = ({ refresh }) => {
       toast.warning("Please select a recipient to share the note!");
       return;
     }
-
+  
     const userKey = prompt("Please enter your key to decrypt the note:");
-
+  
     if (!userKey) {
       toast.error("Invalid key. Please try again!");
       return;
     }
-
+  
     const time = prompt("Please enter the expiration time (in minutes):");
-
     const expirationInMinutes = parseInt(time, 10);
+  
     if (isNaN(expirationInMinutes) || expirationInMinutes <= 0) {
       toast.error("Invalid time. Please enter a number greater than 0!");
       return;
     }
-
+  
     const maxAccess = prompt("Vui lòng nhập số lần được phép truy cập ");
     if (isNaN(maxAccess) || maxAccess <= 0) {
-      alert("số lần truy cập không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+      alert("Số lần truy cập không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
       return;
-  }
-
+    }
+  
     try {
       const note = notes[index];
-
-      const { publicKey, privateKey } = generateKeyPair();
-
-      const recipientPublicKey = publicKey;
-
+      const currentUserId = getUserIdFromLocalStorage();
+      const senderResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/key-exchange`,
+        {
+          userReceiveId:  selectedUser._id, 
+          userSendId: currentUserId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const { sharedKey, shareNoteId} = senderResponse.data;
+  
       const decryptedContent = decryptContent(note.content, userKey);
-
       if (!decryptedContent) {
         toast.error("Cannot decrypt note. Please try again!");
         return;
       }
-
-      const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
-
+  
       const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-      console.log("Note after decryption and re-encryption:", encryptedContent);
+  
+      const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000;
+  
+      const shareResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/notes/share/create`,
+        {
+          shareNoteId: shareNoteId,
+          expirationTime: expirationTime,
+          maxAccess: maxAccess
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
 
-        const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000; 
-
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/notes/share/create`,
-            {
-                sharedKey, 
-                userId: selectedUser._id, 
-                userShareId: getUserIdFromLocalStorage(), 
-                expirationTime: expirationTime,
-                maxAccess: maxAccess
-            },
-             {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-        );
-
-        const shareNoteId = response.data.shareNote._id;
-        const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}`;
-
-        setSharedURLs((prevURLs) => ({
-            ...prevURLs,
-            [index]: sharedURL,
-        }));
-
-       
-        alert("Ghi chú đã được chia sẻ thành công!");
+      const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}`;
+  
+      setSharedURLs((prevURLs) => ({
+        ...prevURLs,
+        [index]: sharedURL,
+      }));
+  
+      alert("Ghi chú đã được chia sẻ thành công!");
       toast.success("Note shared successfully!");
     } catch (error) {
       console.error("Error", error);
       toast.error("Cannot share note. Please try again!");
     }
   };
+  
 
   return (
     <div className="container">
