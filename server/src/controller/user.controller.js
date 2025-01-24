@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const { hashPassword, comparePassword, generateJWT,verifyJWT } = require('../utils/auth.util');
 const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 const crypto = require("crypto");
+const ShareNote = require("../models/share.model")
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -13,29 +14,17 @@ const register = async (req, res) => {
 
         const hashedPassword = await hashPassword(password);
 
-        const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: {
-                type: 'spki',  
-                format: 'pem',
-            },
-            privateKeyEncoding: {
-                type: 'pkcs8',
-                format: 'pem',
-            },
-        });
+
         const user = await User.create({
             username,
             email,
             password: hashedPassword,
-            publicKey, 
         });
 
         const token = generateJWT(user.id);
         res.status(201).json({
             message: 'User registered successfully',
             token,
-            publicKey,
         });
     } catch (error) {
         console.error('Error registering user:', error);
@@ -173,4 +162,58 @@ const getUser = async (req, res) => {
     }
 };
 
-module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, getUser};
+
+const keyExchange = async (req, res) => {
+    try {
+        const { userReceiveId, userSendId } = req.body;
+        
+        const userReceive = await User.findById(userReceiveId);
+        const userSend = await User.findById(userSendId);
+
+        if (!userReceive) {
+            return res.status(404).json({ message: "User receive not found" });
+        }
+        if (!userSend) {
+            return res.status(404).json({ message: "User send not found" });
+        }
+
+        // Tạo Diffie-Hellman cho Sender
+        const dhSender = crypto.createDiffieHellman(1024);
+        const publicKeySender = dhSender.generateKeys();
+
+        // Tạo Diffie-Hellman cho Receiver
+        const dhReceiver = crypto.createDiffieHellman(dhSender.getPrime(), dhSender.getGenerator());
+        const publicKeyReceiver = dhReceiver.generateKeys();
+
+        // Tính toán khóa chia sẻ từ cả hai phía
+        const sharedKeySender = dhSender.computeSecret(publicKeyReceiver);
+        const sharedKeyReceiver = dhReceiver.computeSecret(publicKeySender);
+
+        userSend.publicKey = publicKeySender.toString('base64');
+        await userSend.save();
+
+        userReceive.publicKey = publicKeyReceiver.toString('base64');
+        await userReceive.save();
+
+        const shareNote = new ShareNote({
+            userId: userReceiveId,
+            userShareId: userSendId,
+            sessionKey: sharedKeySender.toString('base64'),
+        });
+        await shareNote.save();
+
+        
+        res.status(200).json({
+            message: 'Key exchange completed successfully',
+            sharedKey:  sharedKeySender.toString('base64'),
+            shareNoteId: shareNote._id,
+        });
+
+    } catch (error) {
+        console.error('Error during key exchange', error);
+        res.status(500).json({ message: 'Error during key exchange', error: error.message });
+    }
+};
+
+
+module.exports = { register, login, forgotPassword, verifyOtp, resetPassword,getUsers, getUser, keyExchange};
