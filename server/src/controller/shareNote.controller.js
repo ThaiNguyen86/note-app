@@ -1,18 +1,15 @@
     const ShareNote = require("../models/share.model")
+    
 
     const createShareNote = async (req, res) => {
         try {
-            const {userId ,userShareId, sharedKey, expirationTime, maxAccess} = req.body;
-            if (!userId || !userShareId || !sharedKey || !expirationTime) {
-                return res.status(400).json({ message: "Thiếu thông tin cần thiết để chia sẻ ghi chú" });
-            }
-            const shareNote = new ShareNote({
-                userId,
-                userShareId,
-                publicKey: sharedKey,
-                expirationTime,
-                maxAccess: maxAccess
-            });
+            const { shareNoteId, expirationTime, maxAccess} = req.body;
+            
+            const shareNote = await ShareNote.findById(shareNoteId);
+
+            shareNote.expirationTime = expirationTime;
+            shareNote.maxAccess = maxAccess;
+            
             await shareNote.save();
             res.status(201).json({ message: "Chia sẻ ghi chú thành công", shareNote });
 
