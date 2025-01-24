@@ -181,11 +181,11 @@ const keyExchange = async (req, res) => {
         // Tạo Diffie-Hellman cho Sender
         const dhSender = crypto.createDiffieHellman(1024);
         const publicKeySender = dhSender.generateKeys();
-
+        console.log("publicKeySender :" + publicKeySender)
         // Tạo Diffie-Hellman cho Receiver
         const dhReceiver = crypto.createDiffieHellman(dhSender.getPrime(), dhSender.getGenerator());
         const publicKeyReceiver = dhReceiver.generateKeys();
-
+        console.log("publicKeyReceiver:" + publicKeyReceiver)
         // Tính toán khóa chia sẻ từ cả hai phía
         const sharedKeySender = dhSender.computeSecret(publicKeyReceiver);
         const sharedKeyReceiver = dhReceiver.computeSecret(publicKeySender);
