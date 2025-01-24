@@ -22,6 +22,7 @@ const NoteList = ({ refresh }) => {
     return null;
   };
 
+
   useEffect(() => {
     const fetchNotesAndUsers = async () => {
       setLoading(true);
@@ -98,75 +99,85 @@ const NoteList = ({ refresh }) => {
       toast.warning("Please select a recipient to share the note!");
       return;
     }
-
+  
     const userKey = prompt("Please enter your key to decrypt the note:");
-
+  
     if (!userKey) {
       toast.error("Invalid key. Please try again!");
       return;
     }
-
+  
     const time = prompt("Please enter the expiration time (in minutes):");
-
     const expirationInMinutes = parseInt(time, 10);
+  
     if (isNaN(expirationInMinutes) || expirationInMinutes <= 0) {
       toast.error("Invalid time. Please enter a number greater than 0!");
       return;
     }
-
+  
+    const maxAccess = prompt("Vui lòng nhập số lần được phép truy cập ");
+    if (isNaN(maxAccess) || maxAccess <= 0) {
+      alert("Số lần truy cập không hợp lệ. Vui lòng nhập một số lớn hơn 0!");
+      return;
+    }
+  
     try {
       const note = notes[index];
-
-      const { publicKey, privateKey } = generateKeyPair();
-
-      const recipientPublicKey = publicKey;
-
-      const decryptedContent = decryptContent(note.content, userKey);
-
-      if (!decryptedContent) {
-        toast.error("Cannot decrypt note. Please try again!");
-        return;
-      }
-
-      const sharedKey = computeSharedKey(privateKey, recipientPublicKey);
-
-      const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
-      console.log("Note after decryption and re-encryption:", encryptedContent);
-
-      const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000;
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/notes/share/create`,
+      const currentUserId = getUserIdFromLocalStorage();
+      const senderResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/key-exchange`,
         {
-          sharedKey,
-          userId: selectedUser._id,
-          userShareId: getUserIdFromLocalStorage(),
-          expirationTime: expirationTime
+          userReceiveId:  selectedUser._id, 
+          userSendId: currentUserId,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      const { sharedKey, shareNoteId} = senderResponse.data;
+  
+      const decryptedContent = decryptContent(note.content, userKey);
+      if (!decryptedContent) {
+        toast.error("Cannot decrypt note. Please try again!");
+        return;
+      }
+  
+      const encryptedContent = CryptoJS.AES.encrypt(decryptedContent, sharedKey).toString();
+  
+      const expirationTime = new Date().getTime() + expirationInMinutes * 60 * 1000;
+  
+      const shareResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/notes/share/create`,
+        {
+          shareNoteId: shareNoteId,
+          expirationTime: expirationTime,
+          maxAccess: maxAccess
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
 
-      const shareNoteId = response.data.shareNote._id;
-      const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}&expiresAt=${expirationTime}&maxAccess=1`;
-
+      const sharedURL = `${window.location.origin}/shared-note?id=${shareNoteId}&content=${encodeURIComponent(encryptedContent)}`;
+  
       setSharedURLs((prevURLs) => ({
         ...prevURLs,
         [index]: sharedURL,
       }));
-
+  
       toast.success("Note shared successfully!");
     } catch (error) {
       console.error("Error", error);
       toast.error("Cannot share note. Please try again!");
     }
   };
+  
 
   return (
     <div className="container">
       <ToastContainer autoClose={1500} />
-      <h2 className="text-center mb-4 text-transparent bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-semibold text-xl">Note List</h2>
+      <h2 className="text-center mb-4 text-transparent bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-bold text-xl">Note List</h2>
 
       {loading ? (
         <p className="text-center text-secondary">Loading notes...</p>
@@ -195,7 +206,7 @@ const NoteList = ({ refresh }) => {
                   <div className="d-flex justify-content-between">
                     <button
                       onClick={() => handleDecrypt(index)}
-                      className="btn btn-primary mt-3"
+                      className="btn bg-custom-green hover:bg-custom-green2 text-white mt-3"
                     >
                       Decrypt
                     </button>
@@ -224,7 +235,7 @@ const NoteList = ({ refresh }) => {
                   </div>
                   <button
                     onClick={() => handleShare(index)}
-                    className="btn btn-primary mt-3"
+                    className="btn bg-custom-green hover:bg-custom-green2 text-white mt-3"
                   >
                     Share
                   </button>

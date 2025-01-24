@@ -13,7 +13,7 @@ const DashboardPage = () => {
 
   return (
     <div className="container py-4">
-      <h1 className=" bg-clip-text bg-gradient-to-b from-emerald-600 to-amber-600 font-bold text-2xl text-center text-transparent">Home</h1>
+      <h1 className=" bg-clip-text bg-gradient-to-b from-sky-600 to-amber-600 font-bold text-2xl text-center text-transparent">Home</h1>
 
       <div className="mb-4">
         <CreateNote onNoteCreated={handleNoteCreated} />

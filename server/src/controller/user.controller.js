@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const { hashPassword, comparePassword, generateJWT, verifyJWT } = require('../utils/auth.util');
 const { sendPasswordResetEmail } = require('../helpers/auth.helper');
 const crypto = require("crypto");
-const ShareNote = require("../models/share.model")
+const ShareNote = require("../models/share.model");
 
 const register = async (req, res) => {
     const { username, email, password } = req.body;
@@ -143,7 +143,7 @@ const getUser = async (req, res) => {
         const { id } = req.params;
 
         if (!id) {
-            return res.status(400).json({ success: false, message: "Missing id to search for user" });
+            return res.status(400).json({ success: false, message: "Missing id to find user" });
         }
 
         const user = await User.findById(id, { password: 0 });

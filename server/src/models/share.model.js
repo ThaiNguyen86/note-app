@@ -9,7 +9,7 @@
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User'
         },
-        publicKey: { 
+        sessionKey: { 
             type: String
         },
         createdAt: {

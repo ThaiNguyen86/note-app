@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const HomePage = () => {
+
     const styles = {
         homePage: {
-            background: "url('https://source.unsplash.com/1600x900/?notes,technology') no-repeat center center/cover",
+            background: "linear-gradient(to bottom,rgba(9, 151, 222, 0.62),rgba(255, 178, 45, 0.61)), url('https://source.unsplash.com/1600x900/?notes,technology') no-repeat center center/cover",
             height: "100vh",
             display: "flex",
             justifyContent: "center",
@@ -19,7 +20,7 @@ const HomePage = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "rgba(0, 0, 0, 0.6)",
+            background: "rgba(0, 0, 0, 0.24)",
         },
         homeContent: {
             textAlign: "center",
@@ -35,8 +36,9 @@ const HomePage = () => {
         homeDescription: {
             fontSize: "1.5rem",
             marginBottom: "30px",
+            fontWeight: "bold",
             lineHeight: 1.5,
-            color: "#ddd",
+            color: "white",
         },
         buttonContainer: {
             marginTop: "20px",
@@ -51,11 +53,17 @@ const HomePage = () => {
             transition: "background-color 0.3s ease, color 0.3s ease",
         },
         btnPrimary: {
-            backgroundColor: "#007bff",
-            color: "#fff",
+            backgroundColor: "rgb(36, 108, 179)",
+            color: "white",
         },
-    };
+        btnPrimaryHover: {
+            backgroundColor: "rgb(27, 81, 135)",
+            color: "white",
+        },
 
+
+    };
+    const [btnStyle, setBtnStyle] = React.useState(styles.btnPrimary);
     return (
         <div style={styles.homePage}>
             <div style={styles.overlay}></div>
@@ -65,10 +73,17 @@ const HomePage = () => {
                     Store, share, and manage your notes easily and securely.
                 </p>
                 <div style={styles.buttonContainer}>
-                    <Link to="/dashboard" style={{ ...styles.btn, ...styles.btnPrimary }}>
-                        Get Started
-                    </Link>
+                    <button
+                        style={{ ...styles.btn, ...btnStyle }}
+                        onMouseEnter={() => setBtnStyle(styles.btnPrimaryHover)}
+                        onMouseLeave={() => setBtnStyle(styles.btnPrimary)}
+                    >
+                        <Link to="/dashboard">
+                            Get Started
+                        </Link>
+                    </button>
                 </div>
+
             </div>
         </div>
     );
