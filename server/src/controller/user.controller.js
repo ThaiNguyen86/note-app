@@ -190,15 +190,6 @@ const keyExchange = async (req, res) => {
         const sharedKeySender = dhSender.computeSecret(publicKeyReceiver);
         const sharedKeyReceiver = dhReceiver.computeSecret(publicKeySender);
 
-        // Kiểm tra xem các khóa chia sẻ có khớp không
-        if (sharedKeySender.toString('hex') == sharedKeyReceiver.toString('hex')) {
-           console.log('Both shared keys are equal!');
-        } else {
-        console.log('Shared keys are different!');
-        }
-        console.log("sharedKeySender: "  + sharedKeySender.toString('base64'))
-        console.log("sharedKeyReceiver: " + sharedKeyReceiver.toString('base64'))
-
         userSend.publicKey = publicKeySender.toString('base64');
         await userSend.save();
 
