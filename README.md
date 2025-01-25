@@ -1,7 +1,7 @@
 # ĐỒ ÁN NHẬP MÔN MÃ HÓA MẬT MÃ- ĐỀ TÀI: ỨNG DỤNG CHIA SẺ GHI CHÚ
 
 ### LỜI GIỚI THIỆU
-Đây là đồ án 2 môn Nhập môn Mã hóa Mật mã lớp CQ2022/22, được thực hiện bởi nhóm 4 và dưới sự hướng dẫn của Thầy Đặng Trần Minh Hậu.
+Đây là đồ án 2 môn Nhập môn Mã hóa Mật mã lớp CQ2022/22, được thực hiện bởi nhóm 4 thành viên, dưới sự hướng dẫn của thầy Ngô Đình Hy
 
 #### Thành viên nhóm 5
 |STT|Tên thành viên|MSSV|
@@ -25,8 +25,8 @@ Sau khi tải project từ github về máy tính cá nhân, ta cần thực hi�
 * Bước 3: Trong 2 Command prompt của client và server, lần lượt sử dụng lệnh `npm i` để cài đặt các module cần thiết cho chương trình.
 * Bước 4: Trong Command prompt, sử dụng lệnh `npm run dev` để server và client được khởi chạy, truy cập (http://localhost:5173/) để xem kết quả.
 
-<!-- ### VIDEO DEMO ĐỒ ÁN
-[Link video demo]() -->
+<!-- ### Link ĐỒ ÁN
+https://github.com/ThaiNguyen86/note-app/tree/main -->
 
 ### MỘT SỐ CHỨC NĂNG CƠ BẢN CỦA ĐỒ ÁN (CURRENT STATUS)
 * Đăng kí/Đăng nhập tài khoản.
