@@ -16,6 +16,11 @@
 * Front-end: HTML, CSS và Javascript, Reactjs.
 * Back-end: Javascript trên môi trường NodeJS (framework Express).
 * Cơ sở dữ liệu: Mongodb.
+* *Bảo mật*:
+  - AES Encryption
+  - JWT Token
+  - End-to-End Encryption (E2EE)
+  - ...
 
 ### CÁCH CHẠY PROJECT TRÊN LOCAL PC
 Sau khi tải project từ github về máy tính cá nhân, ta cần thực hiện 1 số thao tác sau để có thể khởi chạy project:
@@ -24,9 +29,6 @@ Sau khi tải project từ github về máy tính cá nhân, ta cần thực hi�
 * Bước 2: Mở 2 Command prompt, sử dụng lệnh cd lần lượt tới tới folder của server và client: 
 * Bước 3: Trong 2 Command prompt của client và server, lần lượt sử dụng lệnh `npm i` để cài đặt các module cần thiết cho chương trình.
 * Bước 4: Trong Command prompt, sử dụng lệnh `npm run dev` để server và client được khởi chạy, truy cập (http://localhost:5173/) để xem kết quả.
-
-<!-- ### Link ĐỒ ÁN
-https://github.com/ThaiNguyen86/note-app/tree/main -->
 
 ### MỘT SỐ CHỨC NĂNG CƠ BẢN CỦA ĐỒ ÁN (CURRENT STATUS)
 * Đăng kí/Đăng nhập tài khoản.
@@ -43,3 +45,6 @@ https://github.com/ThaiNguyen86/note-app/tree/main -->
 * Hỗ trợ đa định dạng ghi chú
 * Hoàn thiện tính năng phân quyền.
 * Nghiên cứu và tích hợp công nghệ mới (Tích hợp blockchain, Áp dụng AI...)
+
+  ## Link đồ án
+[GitHub Repository - Note App](https://github.com/ThaiNguyen86/note-app/tree/main)
