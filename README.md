@@ -21,8 +21,8 @@
 Sau khi tải project từ github về máy tính cá nhân, ta cần thực hiện 1 số thao tác sau để có thể khởi chạy project:
 * Đảm bảo máy đã cài đặt nodeJS.
 * Bước 1: Trong Command prompt, sử dụng lệnh cd để tới folder của project.
-* Bước 2: Trong Command prompt, sử dụng lệnh `npm i` để cài đặt các module cần thiết cho chương trình.
-* Bước 3: Trong Command prompt mở thêm 1 Command prompt, sử dụng lệnh cd để tới folder của server và client:
+* Bước 2: Mở 2 Command prompt, sử dụng lệnh cd lần lượt tới tới folder của server và client: 
+* Bước 3: Trong 2 Command prompt của client và server, lần lượt sử dụng lệnh `npm i` để cài đặt các module cần thiết cho chương trình.
 * Bước 4: Trong Command prompt, sử dụng lệnh `npm run dev` để server và client được khởi chạy, truy cập (http://localhost:5173/) để xem kết quả.
 
 <!-- ### VIDEO DEMO ĐỒ ÁN
