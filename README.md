@@ -3,7 +3,7 @@
 ### LỜI GIỚI THIỆU
 Đây là đồ án 2 môn Nhập môn Mã hóa Mật mã lớp CQ2022/22, được thực hiện bởi nhóm 4 thành viên, dưới sự hướng dẫn của thầy Ngô Đình Hy
 
-#### Thành viên nhóm 5
+#### Thành viên nhóm
 |STT|Tên thành viên|MSSV|
 |:-:|:-:|:-:|
 |1|[Nguyễn Thanh Thái](https://github.com/ThaiNguyen86)|22120330|
